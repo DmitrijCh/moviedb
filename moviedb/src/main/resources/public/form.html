@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="styles.css">
+    <title>Authorization</title>
+    <style>
+        body {
+            background: repeat url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRKNAZoscY0aU7md4KWR2Mem9JH9zRn_pk7w&usqp=CAU);
+        }
+
+        div {
+            margin-left: 1500px;
+        }
+
+        h1 {
+            color: #006400;
+            margin-left: 4.5em;
+        }
+
+        #hello-user {
+            color: #006400;
+            font-size: 60px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 10em
+        }
+
+        #output-button {
+            margin-top: 160px;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        input[type=text], input[type=password] {
+            width: 100%;
+            padding: 15px;
+            margin: 5px 0 22px 0;
+            display: inline-block;
+            border: none;
+            background: #f1f1f1;
+        }
+
+        input[type=text]:focus, input[type=password]:focus {
+            background-color: #ddd;
+            outline: none;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            opacity: 0.9;
+        }
+
+        button:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+<div id="log">
+    <form action="http://localhost:9000/authorization" method="post">
+        <label>
+            <input type="text" required name="login" placeholder="Login"/>
+        </label>
+        <label>
+            <input type="password" required name="password" placeholder="Password"/>
+        </label>
+        <button>Вход</button>
+    </form>
+    <a id="login" href="javascript:void(0);">Зарегистрироваться</a>
+</div>
+
+<div id="reg" style="display:none;">
+    <form action="javascript:void(0)" id="form">
+        <label>
+            <input type="text" required name="name" placeholder="Name"/>
+        </label>
+        <label>
+            <input type="text" required name="login" placeholder="Login"/>
+        </label>
+        <label>
+            <input type="password" required name="password" placeholder="Password"/>
+        </label>
+        <button id="reg-button" type="submit">Регистрация</button>
+    </form>
+    <a href="http://localhost:9000/authorization">Войти в аккаунт</a>
+
+</div>
+
+<div id="hello-user" style="display:none;">
+    <button id="output-button" >Выход</button>
+    <button id="user-page" >Перейти на страницу пользователя</button>
+</div>
+
+<script src="/main.js"></script>
+</body>
+</html>

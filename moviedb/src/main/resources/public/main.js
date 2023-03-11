@@ -1,67 +1,40 @@
-function filling_form() {
-    const form = document.getElementById('form')
-    let fail = false;
-    let name = form.name.value;
-    let login = form.login.value;
-    let password = form.password.value;
-
-    if (name === '' || name === ' ') {
-        fail = 'Вы не ввели свое имя';
-    } else if (login === '') {
-        fail = 'Вы не ввели логин';
-    } else if (password === '') {
-        fail = 'Вы не ввели пароль';
-    } else if (password.length <= 6) {
-        fail = "Пароль должен содержать не менее 6-ти символов!"
-    }
-
-    if (fail) {
-        alert(fail);
+function login(id) { //переключение между формой регистрации и авторизацией ????? //toggleReg
+    const idElement = document.getElementById(id);
+    const login = document.getElementById('authorization');
+    if (idElement.style.display === 'block') {
+        idElement.style.display = 'none';
     } else {
-        const user_element = document.getElementById("hello-user");
-        const register_element = document.getElementById('reg');
-        if (user_element.style.display === 'block') {
-            user_element.style.display = 'none';
-        } else {
-            user_element.style.display = 'block';
-            register_element.style.display = 'none';
-        }
+        idElement.style.display = 'block';
+        login.style.display = 'none';
     }
 }
 
-function login(id) {
-    const id_element = document.getElementById(id);
-    const login_element = document.getElementById('log');
-    if (id_element.style.display === 'block') {
-        id_element.style.display = 'none';
+function authorizationButton() { //кнопка отвечающая за переключение между формой регистрации и авторизацией ?????
+    document.getElementById('auth-button').addEventListener('click', () => {
+        login('registration');
+    })
+}
+
+authorizationButton();
+
+//Регистрация
+function registrationForm() { //форма регистрации
+    const hello = document.getElementById("hello-user");
+    const registration = document.getElementById('registration');
+    if (hello.style.display === 'block') {
+        hello.style.display = 'none';
     } else {
-        id_element.style.display = 'block';
-        login_element.style.display = 'none';
+        hello.style.display = 'block';
+        registration.style.display = 'none';
     }
 }
 
-function saved() {
-    if (localStorage.getItem('key') !== null) {
-        const hello_element = document.getElementById('hello-user');
-        const login_element = document.getElementById('log');
-        if (hello_element.style.display === 'block') {
-            hello_element.style.display = 'none';
-        } else {
-            hello_element.style.display = 'block';
-            login_element.style.display = 'none';
-            registerUser(localStorage.getItem('key'))
-        }
-    }
-}
-
-saved()
-
-function registration() {
-    const form = document.getElementById('form');
-    form.addEventListener('submit', function (e) {
-        filling_form();
+function registration() { //отправка форы регистрации и получение "ключа"
+    const regForm = document.getElementById('registration-form');
+    regForm.addEventListener('submit', function (e) {
+        registrationForm();
         e.preventDefault();
-        const load = new FormData(form);
+        const load = new FormData(regForm);
 
         fetch('http://localhost:9000/register', {
             method: 'POST',
@@ -74,18 +47,81 @@ function registration() {
             .then((data) => {
                 console.log(data);
                 localStorage.setItem('key', data.key);
-                savedUser(data.key);
+                if (localStorage.getItem('key') !== null) {
+                    verificationUser(data.key);
+                }
             })
     });
 }
 
-function registerUser(key) {
-    let param = new FormData();
-    param.set('key', key)
+function registrationButton() { //кнопка "Регистрация"
+    document.getElementById('reg-button').addEventListener('click', () => {
+        registration();
+    })
+}
+
+registrationButton();
+
+//Авторизация
+function authorizationForm() { //форма авторизации
+    const forms = document.getElementById('authorization-form')
+    let logins = forms.login.value;
+    let passwords = forms.password.value;
+
+    const hello = document.getElementById("hello-user");
+    const authorization = document.getElementById('authorization');
+    if (logins && passwords === localStorage.getItem('key')) {
+        if (hello.style.display === 'block') {
+            hello.style.display = 'none';
+        } else {
+            hello.style.display = 'block';
+            authorization.style.display = 'none';
+        }
+    }
+}
+
+function authorization() { //отправка форы авторизации и получение "ключа"
+    const authForm = document.getElementById('authorization-form');
+    authForm.addEventListener('submit', function (e) {
+        authorizationForm();
+        e.preventDefault();
+        const load = new FormData(authForm);
+
+        fetch('http://localhost:9000/logins', {
+            method: 'POST',
+            body: load,
+            headers: {Accept: 'application/json'},
+        })
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                console.log(data);
+                localStorage.setItem('key', data.key);
+                if (localStorage.getItem('key') !== null) {
+                    verificationUser(data.key);
+                    location.reload();
+                }
+            })
+    });
+}
+
+function loginButton() { //кнопка "Вход"
+    document.getElementById('login-button').addEventListener('click', () => {
+        authorization();
+    })
+}
+
+loginButton();
+
+//Ключ-сессии
+function verificationUser(key) { //принимает ключ, проверяет данные пользователя, после отправляет приветсвие пользователю
+    let paramKey = new FormData();
+    paramKey.set('key', key);
 
     fetch('http://localhost:9000/message', {
         method: 'POST',
-        body: param
+        body: paramKey
     })
         .then(function (response) {
             return response.json();
@@ -94,33 +130,27 @@ function registerUser(key) {
             console.log(response.message);
             document.getElementById('hello-user').innerHTML = response.message +
                 document.getElementById('hello-user').innerHTML;
-            output_button()
+            outputButton();
         })
 }
 
-function savedUser(key) {
+function savedKey() { //если в localStorage есть ключ - блок регистрации или авторизации сменяется блоком приветствия пользователя ?????
     if (localStorage.getItem('key') !== null) {
-        registerUser(key)
+        const hello = document.getElementById('hello-user');
+        const authorization = document.getElementById('authorization');
+        if (hello.style.display === 'block') {
+            hello.style.display = 'none';
+        } else {
+            hello.style.display = 'block';
+            authorization.style.display = 'none';
+            verificationUser(localStorage.getItem('key'));
+        }
     }
 }
 
-function reg_button() {
-    document.getElementById('reg-button').addEventListener('click', () => {
-        registration();
-    })
-}
+savedKey();
 
-reg_button();
-
-function log_button() {
-    document.getElementById('login').addEventListener('click', () => {
-        login('reg')
-    })
-}
-
-log_button()
-
-function output_button() {
+function outputButton() { //кнопка "Выход" со страницы пользователя
     document.getElementById('output-button').addEventListener('click', () => {
         localStorage.removeItem('key');
         location.reload();

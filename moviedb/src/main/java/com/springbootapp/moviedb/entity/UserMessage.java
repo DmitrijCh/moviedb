@@ -1,9 +1,9 @@
 package com.springbootapp.moviedb.entity;
 
-public class User {
+public class UserMessage {
     private String message;
 
-    public User() {
+    public UserMessage() {
     }
 
     public void setMessage(String message) {

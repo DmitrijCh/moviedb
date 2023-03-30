@@ -6,9 +6,7 @@ import java.text.SimpleDateFormat;
 
 @Component
 public class Timestamp {
-    public String stamp() {
-        String timeStamp = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new java.util.Date());
-        System.out.println(timeStamp);
-        return timeStamp;
+    public String getStamp() {
+        return new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new java.util.Date());
     }
 }

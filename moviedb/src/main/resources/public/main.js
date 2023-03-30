@@ -1,25 +1,19 @@
-function login(id) { //переключение между формой регистрации и авторизацией ????? //toggleReg
-    const idElement = document.getElementById(id);
+'use strict';
+
+// переключение между формой регистрации и авторизацией
+function showRegistration() {
+    const reg = document.getElementById('registration');
     const login = document.getElementById('authorization');
-    if (idElement.style.display === 'block') {
-        idElement.style.display = 'none';
-    } else {
-        idElement.style.display = 'block';
+    if (reg.style.display === 'none') {
+        reg.style.display = 'block';
         login.style.display = 'none';
     }
 }
 
-function authorizationButton() { //кнопка отвечающая за переключение между формой регистрации и авторизацией ?????
-    document.getElementById('auth-button').addEventListener('click', () => {
-        login('registration');
-    })
-}
-
-authorizationButton();
-
-//Регистрация
-function registrationForm() { //форма регистрации
-    const hello = document.getElementById("hello-user");
+// Регистрация
+// форма регистрации
+function registrationForm() {
+    const hello = document.getElementById('hello-user');
     const registration = document.getElementById('registration');
     if (hello.style.display === 'block') {
         hello.style.display = 'none';
@@ -29,112 +23,114 @@ function registrationForm() { //форма регистрации
     }
 }
 
-function registration() { //отправка форы регистрации и получение "ключа"
+// отправка форы регистрации и получение "ключа"
+function registration() {
     const regForm = document.getElementById('registration-form');
-    regForm.addEventListener('submit', function (e) {
+    regForm.addEventListener('submit', async function (e) {
         registrationForm();
         e.preventDefault();
         const load = new FormData(regForm);
 
-        fetch('http://localhost:9000/register', {
+        const response = await fetch('http://localhost:9000/register', {
             method: 'POST',
             body: load,
             headers: {Accept: 'application/json'},
         })
-            .then((response) => {
-                return response.json();
-            })
-            .then((data) => {
-                console.log(data);
-                localStorage.setItem('key', data.key);
-                if (localStorage.getItem('key') !== null) {
-                    verificationUser(data.key);
-                }
-            })
+        const json = await response.json();
+        console.log(json);
+        localStorage.setItem('key', json.key);
+        if (localStorage.getItem('key') !== null) {
+            await verificationUser(json.key);
+            await verificationMovie(json.key);
+        }
     });
 }
 
-function registrationButton() { //кнопка "Регистрация"
-    document.getElementById('reg-button').addEventListener('click', () => {
-        registration();
-    })
-}
-
-registrationButton();
-
-//Авторизация
-function authorizationForm() { //форма авторизации
-    const forms = document.getElementById('authorization-form')
-    let logins = forms.login.value;
-    let passwords = forms.password.value;
-
+// Авторизация
+// форма авторизации
+function authorizationForm() {
     const hello = document.getElementById("hello-user");
     const authorization = document.getElementById('authorization');
-    if (logins && passwords === localStorage.getItem('key')) {
-        if (hello.style.display === 'block') {
-            hello.style.display = 'none';
-        } else {
-            hello.style.display = 'block';
-            authorization.style.display = 'none';
-        }
+    if (hello.style.display === 'block') {
+        hello.style.display = 'none';
+    } else {
+        hello.style.display = 'block';
+        authorization.style.display = 'none';
     }
 }
 
-function authorization() { //отправка форы авторизации и получение "ключа"
+// отправка форы авторизации и получение "ключа"
+function authorization() {
     const authForm = document.getElementById('authorization-form');
-    authForm.addEventListener('submit', function (e) {
+    authForm.addEventListener('submit', async function (e) {
         authorizationForm();
         e.preventDefault();
         const load = new FormData(authForm);
 
-        fetch('http://localhost:9000/logins', {
+        const response = await fetch('http://localhost:9000/logins', {
             method: 'POST',
             body: load,
             headers: {Accept: 'application/json'},
         })
-            .then((response) => {
-                return response.json();
-            })
-            .then((data) => {
-                console.log(data);
-                localStorage.setItem('key', data.key);
-                if (localStorage.getItem('key') !== null) {
-                    verificationUser(data.key);
-                    location.reload();
-                }
-            })
+        const json = await response.json();
+        console.log(json);
+        localStorage.setItem('key', json.key);
+        if (localStorage.getItem('key') !== null) {
+            await verificationUser(json.key);
+            await verificationMovie(json.key);
+        }
     });
 }
 
-function loginButton() { //кнопка "Вход"
-    document.getElementById('login-button').addEventListener('click', () => {
-        authorization();
-    })
-}
-
-loginButton();
-
-//Ключ-сессии
-function verificationUser(key) { //принимает ключ, проверяет данные пользователя, после отправляет приветсвие пользователю
+// Ключ-сессии
+// принимает ключ, проверяет данные пользователя, после отправляет приветсвие пользователю
+async function verificationUser(key) {
     let paramKey = new FormData();
     paramKey.set('key', key);
 
-    fetch('http://localhost:9000/message', {
+    const response = await fetch('http://localhost:9000/message/user', {
         method: 'POST',
         body: paramKey
     })
-        .then(function (response) {
-            return response.json();
-        })
-        .then(function (response) {
-            console.log(response.message);
-            document.getElementById('hello-user').innerHTML = response.message +
-                document.getElementById('hello-user').innerHTML;
-            outputButton();
-        })
+    const json = await response.json();
+    console.log(json.message);
+    document.getElementById('hello-user').innerHTML = json.message +
+        document.getElementById('hello-user').innerHTML;
+    outputButton();
 }
 
-function savedKey() { //если в localStorage есть ключ - блок регистрации или авторизации сменяется блоком приветствия пользователя ?????
+// отправляет список фильмов пользователю
+async function verificationMovie() {
+    const response = await fetch('http://localhost:9000/message/movie', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    });
+    const movies = await response.json();
+    console.log(movies);
+    movies.forEach(movie => {
+        const movieDiv = document.createElement('div');
+        const name = document.createElement('h2');
+        const year = document.createElement('p');
+        const poster = document.createElement('img');
+
+        name.textContent = movie.name;
+        year.textContent = movie.year;
+        poster.src = movie.poster;
+
+        movieDiv.appendChild(name);
+        movieDiv.appendChild(year);
+        movieDiv.appendChild(poster);
+
+        document.getElementById('hello-user').appendChild(movieDiv);
+    });
+
+    outputButton();
+}
+
+// если в localStorage есть ключ - блок регистрации или авторизации сменяется блоком приветствия пользователя
+function presenceKey() {
     if (localStorage.getItem('key') !== null) {
         const hello = document.getElementById('hello-user');
         const authorization = document.getElementById('authorization');
@@ -143,16 +139,42 @@ function savedKey() { //если в localStorage есть ключ - блок р
         } else {
             hello.style.display = 'block';
             authorization.style.display = 'none';
-            verificationUser(localStorage.getItem('key'));
+            void verificationUser(localStorage.getItem('key'));
+            void verificationMovie(localStorage.getItem('key'));
         }
     }
 }
 
-savedKey();
+// кнопка отвечающая за переключение между формой регистрации и авторизацией
+function authorizationButton() {
+    document.getElementById('auth-button').addEventListener('click', showRegistration);
+}
 
-function outputButton() { //кнопка "Выход" со страницы пользователя
+// кнопка "Регистрация"
+function registrationButton() {
+    document.getElementById('reg-button').addEventListener('click', registration)
+}
+
+// кнопка "Вход"
+function loginButton() {
+    document.getElementById('login-button').addEventListener('click', authorization);
+}
+
+// кнопка "Выход" со страницы пользователя
+function outputButton() {
     document.getElementById('output-button').addEventListener('click', () => {
         localStorage.removeItem('key');
         location.reload();
     })
 }
+
+function main() {
+    authorizationButton();
+    registrationButton();
+    loginButton();
+    presenceKey();
+}
+
+main();
+
+

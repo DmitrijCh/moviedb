@@ -6,7 +6,7 @@ import java.util.UUID;
 
 @Component
 public class TokenUsers {
-    public String key() {
+    public String getKey() {
         return UUID.randomUUID().toString();
     }
 }

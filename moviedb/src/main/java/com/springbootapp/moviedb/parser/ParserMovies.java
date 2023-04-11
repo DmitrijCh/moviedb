@@ -45,21 +45,34 @@ public class ParserMovies {
         int size = 49;
         for (int n = 0; n <= size; n++) {
             JSONObject movieTitle = (JSONObject) movieArray.get(n);
-            String nameRussian = (String) movieTitle.get("name_russian");
 
-            String queryCheck = "SELECT COUNT(*) FROM movies WHERE name = ?";
+            int id = ((Number) movieTitle.get("id")).intValue();
+
+            String queryCheck = "SELECT COUNT(*) FROM movies WHERE id = ?";
             PreparedStatement statement = connection.prepareStatement(queryCheck);
-            statement.setString(1, nameRussian);
+            statement.setInt(1, id);
+
             ResultSet resultSet = statement.executeQuery();
             resultSet.next();
             int count = resultSet.getInt(1);
 
             if (count == 0) {
-                String queryInsert = "INSERT INTO movies (name, year, poster) VALUES (?, ?, ?)";
+                String queryInsert = "INSERT INTO movies (id, name_original, name, year, time, age_restriction, description, slogan, budget, country_ru, type, created_at, updated_at, poster) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 PreparedStatement statementInsert = connection.prepareStatement(queryInsert);
-                statementInsert.setString(1, nameRussian);
-                statementInsert.setString(2, (String) movieTitle.get("year"));
-                statementInsert.setString(3, (String) movieTitle.get("big_poster"));
+                statementInsert.setInt(1, id);
+                statementInsert.setString(2, (String) movieTitle.get("name_original"));
+                statementInsert.setString(3, (String) movieTitle.get("name_russian"));
+                statementInsert.setString(4, (String) movieTitle.get("year"));
+                statementInsert.setString(5, (String) movieTitle.get("time"));
+                statementInsert.setString(6, (String) movieTitle.get("age_restriction"));
+                statementInsert.setString(7, (String) movieTitle.get("description"));
+                statementInsert.setString(8, (String) movieTitle.get("slogan"));
+                statementInsert.setString(9, (String) movieTitle.get("budget"));
+                statementInsert.setString(10, (String) movieTitle.get("country_ru"));
+                statementInsert.setString(11, (String) movieTitle.get("type"));
+                statementInsert.setString(12, (String) movieTitle.get("created_at"));
+                statementInsert.setString(13, (String) movieTitle.get("updated_at"));
+                statementInsert.setString(14, (String) movieTitle.get("small_poster"));
                 statementInsert.execute();
             }
         }

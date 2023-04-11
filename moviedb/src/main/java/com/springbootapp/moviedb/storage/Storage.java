@@ -27,6 +27,7 @@ public class Storage {
         this.timestamp = timestamp;
         this.connection = connection;
     }
+
     public void addUsers(String name, String login, String password) throws SQLException {
 
         String query = "INSERT INTO users (name, login, password) VALUES (?,?,?)";
@@ -80,21 +81,23 @@ public class Storage {
         }
     }
 
-    public List<Movie> getMovie() throws SQLException, JsonProcessingException {
+    public List<Movie> getMovie(String key) throws SQLException {
 
         List<Movie> result = new ArrayList<>();
 
-        String query = "SELECT * FROM movies";
+        String query = "SELECT * FROM movies\n" +
+                "WHERE EXISTS (SELECT 1 FROM session_keys WHERE key = ?)";
 
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery(query);
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, key);
+
+        ResultSet resultSet = statement.executeQuery();
 
         while (resultSet.next()) {
-
             Movie movie = new Movie();
-            movie.setName(resultSet.getString(1));
-            movie.setYear(resultSet.getString(2));
-            movie.setPoster(resultSet.getString(3));
+            movie.setName(resultSet.getString("name"));
+            movie.setYear(resultSet.getString("year"));
+            movie.setPoster(resultSet.getString("poster"));
             result.add(movie);
         }
         return result;
@@ -119,5 +122,24 @@ public class Storage {
         } else {
             return new ObjectMapper().writeValueAsString("Error");
         }
+    }
+
+    public List<Movie> searchMovies(String name) throws SQLException {
+
+        String query = "SELECT * FROM movies WHERE LOWER(name) LIKE '%' || LOWER(?) || '%'\n";
+
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, name);
+
+        ResultSet resultSet = statement.executeQuery();
+        List<Movie> movies = new ArrayList<>();
+        while (resultSet.next()) {
+            Movie movie = new Movie();
+            movie.setName(resultSet.getString("name"));
+            movie.setYear(resultSet.getString("year"));
+            movie.setPoster(resultSet.getString("poster"));
+            movies.add(movie);
+        }
+        return movies;
     }
 }

@@ -31,25 +31,32 @@ public class Controller {
         return storage.registration(login);
     }
 
+    @PostMapping("/logins")
+    public String loginUser(@RequestParam String login, @RequestParam String password) throws JsonProcessingException, SQLException {
+        return storage.verificationKey(login, password);
+    }
+
     @PostMapping("/message/user")
     public String messageUser(@RequestParam String key) throws SQLException, JsonProcessingException {
         return storage.searchKey(key);
     }
 
-    @PostMapping ("/message/movie")
-    public List<Movie> messageMovie(@RequestParam String key) throws SQLException {
-        return storage.getMovie(key);
-    }
-
-    @PostMapping("/logins")
-    public String loginUser(@RequestParam String login, @RequestParam String password) throws JsonProcessingException, SQLException {
-        return storage.verificationKey(login, password);
+    @PostMapping("/message/movie")
+    public List<Movie> messageMovie(@RequestParam String key, @RequestParam int count, @RequestParam int offset) throws SQLException {
+        return storage.getMovie(key, count, offset);
     }
 
     @PostMapping("/search")
     public List<Movie> searchMovies(@RequestParam String name) throws SQLException {
         return storage.searchMovies(name);
     }
+
+    @PostMapping("/message/movie/like")
+    public List<Movie> likeMovies(@RequestParam String key, @RequestParam String name, @RequestParam String year, @RequestParam String poster) throws SQLException {
+        return storage.getLikeMovie(key, name, year, poster);
+    }
 }
+
+
 
 

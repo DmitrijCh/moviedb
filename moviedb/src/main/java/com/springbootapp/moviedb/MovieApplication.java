@@ -22,6 +22,7 @@ public class MovieApplication implements CommandLineRunner {
 
     public static void main(String[] args) {
         SpringApplication.run(MovieApplication.class, args);
+
     }
 
     @Scheduled(fixedRate = 10800000) // запускать каждые 3 часа
@@ -31,13 +32,22 @@ public class MovieApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        for (int i = 1; i <= 50; i++) {
-            URL url = parserMovies.createUrl(String.format("https://kinobd.ru/api/films?page=%d", i));
-            String resultJson = parserMovies.parseUrl(url);
-            parserMovies.parseMovie(resultJson);
+        int batchSize = 10;
+        int totalQuestions = 17739;
+        int numBatches = (int) Math.ceil((double) totalQuestions / batchSize);
+        for (int i = 0; i < numBatches; i++) {
+            int start = i * batchSize + 1;
+            int end = Math.min(start + batchSize - 1, totalQuestions);
+            for (int j = start; j <= end; j++) {
+                URL url = parserMovies.createUrl(String.format("https://kinobd.ru/api/films?page=%d", j));
+                String resultJson = parserMovies.parseUrl(url);
+                parserMovies.parseMovie(resultJson);
+            }
+            Thread.sleep(1000); // ждать 1 секунду
         }
     }
 }
+
 
 //https://kinobd.ru/api/films?page=17739
 

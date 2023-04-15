@@ -81,28 +81,6 @@ public class Storage {
         }
     }
 
-    public List<Movie> getMovie(String key) throws SQLException {
-
-        List<Movie> result = new ArrayList<>();
-
-        String query = "SELECT * FROM movies\n" +
-                "WHERE EXISTS (SELECT 1 FROM session_keys WHERE key = ?)";
-
-        PreparedStatement statement = connection.prepareStatement(query);
-        statement.setString(1, key);
-
-        ResultSet resultSet = statement.executeQuery();
-
-        while (resultSet.next()) {
-            Movie movie = new Movie();
-            movie.setName(resultSet.getString("name"));
-            movie.setYear(resultSet.getString("year"));
-            movie.setPoster(resultSet.getString("poster"));
-            result.add(movie);
-        }
-        return result;
-    }
-
     public String verificationKey(String login, String password) throws SQLException, JsonProcessingException {
 
         String query = "SELECT session_keys.key FROM users INNER JOIN session_keys ON users.login = session_keys.user_login " +
@@ -124,6 +102,26 @@ public class Storage {
         }
     }
 
+    public List<Movie> getMovie(String key, int count, int offset) throws SQLException {
+        List<Movie> result = new ArrayList<>();
+        String query = "SELECT name, year, poster FROM movies WHERE EXISTS (SELECT 1 FROM session_keys WHERE key = ?) ORDER BY id LIMIT ? OFFSET ?";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, key);
+        statement.setInt(2, count);
+        statement.setInt(3, offset);
+
+        ResultSet resultSet = statement.executeQuery();
+
+        while (resultSet.next()) {
+            Movie movie = new Movie();
+            movie.setName(resultSet.getString("name"));
+            movie.setYear(resultSet.getString("year"));
+            movie.setPoster(resultSet.getString("poster"));
+            result.add(movie);
+        }
+        return result;
+    }
+
     public List<Movie> searchMovies(String name) throws SQLException {
 
         String query = "SELECT * FROM movies WHERE LOWER(name) LIKE '%' || LOWER(?) || '%'\n";
@@ -132,6 +130,7 @@ public class Storage {
         statement.setString(1, name);
 
         ResultSet resultSet = statement.executeQuery();
+
         List<Movie> movies = new ArrayList<>();
         while (resultSet.next()) {
             Movie movie = new Movie();
@@ -140,6 +139,25 @@ public class Storage {
             movie.setPoster(resultSet.getString("poster"));
             movies.add(movie);
         }
+        return movies;
+    }
+
+    public List<Movie> getLikeMovie(String key, String name, String year, String poster) throws SQLException {
+        String query = "INSERT INTO like_movies (user_login, name, year, poster) " +
+                "SELECT user_login, ?, ?, ? FROM session_keys WHERE key = ?";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, name);
+        statement.setString(2, year);
+        statement.setString(3, poster);
+        statement.setString(4, key);
+        statement.executeUpdate();
+
+        List<Movie> movies = new ArrayList<>();
+        Movie movie = new Movie();
+        movie.setName(name);
+        movie.setYear(year);
+        movie.setPoster(poster);
+        movies.add(movie);
         return movies;
     }
 }

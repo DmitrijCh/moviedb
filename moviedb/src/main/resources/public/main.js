@@ -127,35 +127,35 @@ let loadedMoviesCount = 0;
 let loadMoreButton = null;
 
 async function verificationMovie(key) {
-    let paramKey = new FormData();
-    paramKey.set("key", key);
+  let paramKey = new FormData();
+  paramKey.set("key", key);
+  paramKey.set("count", 16);
+  paramKey.set("offset", loadedMoviesCount);
 
-    const response = await fetch("http://localhost:9000/message/movie", {
-        method: "POST",
-        body: paramKey,
-    });
+  const response = await fetch("http://localhost:9000/message/movie", {
+    method: "POST",
+    body: paramKey,
+  });
 
-    const movies = await response.json();
-    console.log(movies);
+  const movies = await response.json();
+  console.log(movies);
 
-    const newMovies = movies.slice(loadedMoviesCount, loadedMoviesCount + 16);
+  for (let i = 0; i < movies.length; i++) {
+    const movie = movies[i];
+    const movieDiv = createMovieElement(movie, key);
+    document.getElementById("movie").appendChild(movieDiv);
+  }
 
-    for (let i = 0; i < newMovies.length; i++) {
-        const movie = newMovies[i];
-        const movieDiv = createMovieElement(movie);
-        document.getElementById("movie").appendChild(movieDiv);
-    }
+  loadedMoviesCount += movies.length;
 
-    loadedMoviesCount += newMovies.length;
-
-    // Проверяем наличие переменной для кнопки "Добавить еще"
-    if (!loadMoreButton) {
-        // если переменная отсутствует, создаем кнопку "Добавить еще"
-        loadMoreButton = document.createElement("button");
-        loadMoreButton.style.textAlign = "center";
-        loadMoreButton.style.height = "50px";
-        loadMoreButton.style.width = "1400px";
-        loadMoreButton.textContent = "Добавить еще";
+  // Проверяем наличие переменной для кнопки "Добавить еще"
+  if (!loadMoreButton) {
+    // если переменная отсутствует, создаем кнопку "Добавить еще"
+    loadMoreButton = document.createElement("button");
+    loadMoreButton.style.textAlign = "center";
+    loadMoreButton.style.height = "50px";
+    loadMoreButton.style.width = "1400px";
+    loadMoreButton.textContent = "Добавить еще";
 
         // добавляем обработчик события на нажатие кнопки
         loadMoreButton.addEventListener("click", () => {
@@ -172,10 +172,10 @@ async function verificationMovie(key) {
 
     // добавьте элемент div к родительскому элементу списка фильмов.
     document.getElementById("movie").parentNode.appendChild(loadMoreDiv);
-}
+    }
 
-// Собираем все элементы фильма
-function createMovieElement(movie) {
+// Собираем все элементы фильма, добавляем понравившиеся фильмы в избранное
+function createMovieElement(movie, key) {
     const movieDiv = document.createElement("div");
     const name = document.createElement("h2");
     const year = document.createElement("p");
@@ -191,9 +191,24 @@ function createMovieElement(movie) {
     likeButton.style.width = "140px";
     likeButton.textContent = "Нравится";
 
-    likeButton.addEventListener("click", (key, value) => {
-        localStorage.setItem(`liked_${movie.name}`, value);
-        alert("Фильм добавлен в избранное!");
+    likeButton.addEventListener("click", async () => {
+
+      let paramKey = new FormData();
+      paramKey.set("key", key);
+      paramKey.set("name", movie.name);
+      paramKey.set("year", movie.year);
+      paramKey.set("poster", movie.poster);
+
+      const response = await fetch("http://localhost:9000/message/movie/like", {
+        method: "POST",
+        body: paramKey,
+      });
+
+        if (response.ok) {
+            alert("Фильм добавлен в избранное!");
+        } else {
+            alert("Ошибка при добавлении фильма в избранное.");
+        }
     });
 
     movieDiv.appendChild(name);

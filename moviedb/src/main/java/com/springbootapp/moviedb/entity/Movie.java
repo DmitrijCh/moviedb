@@ -2,11 +2,20 @@ package com.springbootapp.moviedb.entity;
 
 public class Movie {
 
+    private Integer id;
     private String name;
     private String year;
     private String poster;
 
     public Movie() {
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {

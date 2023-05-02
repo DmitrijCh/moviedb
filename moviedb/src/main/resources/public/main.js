@@ -14,11 +14,27 @@ function showRegistration() {
 // форма регистрации
 function registrationForm() {
     const hello = document.getElementById('hello-user');
+    const movies = document.getElementById('search-movies');
+    const likeMovies = document.getElementById('favorites-movies');
     const registration = document.getElementById('registration');
     if (hello.style.display === 'block') {
         hello.style.display = 'none';
     } else {
         hello.style.display = 'block';
+        registration.style.display = 'none';
+    }
+
+    if (likeMovies.style.display === 'block') {
+        likeMovies.style.display = 'none';
+    } else {
+        likeMovies.style.display = 'block';
+        registration.style.display = 'none';
+    }
+
+    if (movies.style.display === 'block') {
+        movies.style.display = 'none';
+    } else {
+        movies.style.display = 'block';
         registration.style.display = 'none';
     }
 }
@@ -50,11 +66,27 @@ function registration() {
 // форма авторизации
 function authorizationForm() {
     const hello = document.getElementById("hello-user");
+    const movies = document.getElementById('search-movies');
+    const likeMovies = document.getElementById('favorites-movies');
     const authorization = document.getElementById('authorization');
     if (hello.style.display === 'block') {
         hello.style.display = 'none';
     } else {
         hello.style.display = 'block';
+        authorization.style.display = 'none';
+    }
+
+    if (likeMovies.style.display === 'block') {
+        likeMovies.style.display = 'none';
+    } else {
+        likeMovies.style.display = 'block';
+        authorization.style.display = 'none';
+    }
+
+    if (movies.style.display === 'block') {
+        movies.style.display = 'none';
+    } else {
+        movies.style.display = 'block';
         authorization.style.display = 'none';
     }
 }
@@ -78,6 +110,7 @@ function authorization() {
         if (localStorage.getItem('key') !== null) {
             await verificationUser(json.key);
             await verificationMovie(json.key);
+            await favoriteMovies(localStorage.getItem('key'));
         }
     });
 }
@@ -101,24 +134,25 @@ async function verificationUser(key) {
 
 // если в localStorage есть ключ - блок регистрации или авторизации сменяется блоком приветствия пользователя
 function presenceKey() {
+    const authorization = document.getElementById('authorization');
+    const hello = document.getElementById('hello-user');
     const movies = document.getElementById('search-movies');
+    const likeMovies = document.getElementById('favorites-movies');
 
     if (localStorage.getItem('key') !== null) {
-        const hello = document.getElementById('hello-user');
-        const authorization = document.getElementById('authorization');
-
         if (hello.style.display === 'block') {
             hello.style.display = 'none';
+            movies.style.display = 'none';
+            likeMovies.style.display = 'none';
         } else {
             hello.style.display = 'block';
+            movies.style.display = 'block';
+            likeMovies.style.display = 'block';
             authorization.style.display = 'none';
             void verificationUser(localStorage.getItem('key'));
             void verificationMovie(localStorage.getItem('key'));
+            void favoriteMovies(localStorage.getItem('key'));
         }
-
-        movies.style.display = 'block';
-    } else {
-        movies.style.display = 'none';
     }
 }
 
@@ -127,35 +161,35 @@ let loadedMoviesCount = 0;
 let loadMoreButton = null;
 
 async function verificationMovie(key) {
-  let paramKey = new FormData();
-  paramKey.set("key", key);
-  paramKey.set("count", 16);
-  paramKey.set("offset", loadedMoviesCount);
+    let paramKey = new FormData();
+    paramKey.set("key", key);
+    paramKey.set("count", 16);
+    paramKey.set("offset", loadedMoviesCount);
 
-  const response = await fetch("http://localhost:9000/message/movie", {
-    method: "POST",
-    body: paramKey,
-  });
+    const response = await fetch("http://localhost:9000/message/movie", {
+        method: "POST",
+        body: paramKey,
+    });
 
-  const movies = await response.json();
-  console.log(movies);
+    const movies = await response.json();
+    console.log(movies);
 
-  for (let i = 0; i < movies.length; i++) {
-    const movie = movies[i];
-    const movieDiv = createMovieElement(movie, key);
-    document.getElementById("movie").appendChild(movieDiv);
-  }
+    for (let i = 0; i < movies.length; i++) {
+        const movie = movies[i];
+        const movieDiv = createMovieElement(movie, key);
+        document.getElementById("movie").appendChild(movieDiv);
+    }
 
-  loadedMoviesCount += movies.length;
+    loadedMoviesCount += movies.length;
 
-  // Проверяем наличие переменной для кнопки "Добавить еще"
-  if (!loadMoreButton) {
-    // если переменная отсутствует, создаем кнопку "Добавить еще"
-    loadMoreButton = document.createElement("button");
-    loadMoreButton.style.textAlign = "center";
-    loadMoreButton.style.height = "50px";
-    loadMoreButton.style.width = "1400px";
-    loadMoreButton.textContent = "Добавить еще";
+    // Проверяем наличие переменной для кнопки "Добавить еще"
+    if (!loadMoreButton) {
+        // если переменная отсутствует, создаем кнопку "Добавить еще"
+        loadMoreButton = document.createElement("button");
+        loadMoreButton.style.textAlign = "center";
+        loadMoreButton.style.height = "50px";
+        loadMoreButton.style.width = "1400px";
+        loadMoreButton.textContent = "Добавить еще";
 
         // добавляем обработчик события на нажатие кнопки
         loadMoreButton.addEventListener("click", () => {
@@ -172,51 +206,103 @@ async function verificationMovie(key) {
 
     // добавьте элемент div к родительскому элементу списка фильмов.
     document.getElementById("movie").parentNode.appendChild(loadMoreDiv);
-    }
+}
 
-// Собираем все элементы фильма, добавляем понравившиеся фильмы в избранное
-function createMovieElement(movie, key) {
+// Собираем все элементы фильма, добавляем понравившиеся фильмы в избранное, так же удаляем фильмы из избранного
+function createMovieElement(movie, key, id) {
     const movieDiv = document.createElement("div");
     const name = document.createElement("h2");
     const year = document.createElement("p");
     const poster = document.createElement("img");
     const likeButton = document.createElement("button");
+    const dislikeButton = document.createElement("button");
+    const favoriteLabel = document.createElement("span");
 
     name.textContent = movie.name;
     year.textContent = movie.year;
     poster.src = movie.poster;
-    poster.style.display = "block";
-    likeButton.style.display = "block";
+
+    likeButton.style.width = "65px";
     likeButton.style.marginTop = "10px";
-    likeButton.style.width = "140px";
-    likeButton.textContent = "Нравится";
+    likeButton.style.marginRight = "10px";
+    likeButton.textContent = "👍";
 
+    dislikeButton.style.width = "65px";
+    dislikeButton.style.marginTop = "10px";
+    dislikeButton.textContent = "👎";
+
+    favoriteLabel.textContent = "Фильм добавлен в избранное!";
+    favoriteLabel.style.display = "none";
+    favoriteLabel.style.fontSize = "18px";
+
+    // добавление фильма в избранное
     likeButton.addEventListener("click", async () => {
+        let paramKey = new FormData();
+        paramKey.set("key", key);
+        paramKey.set("movieID", movie.id);
 
-      let paramKey = new FormData();
-      paramKey.set("key", key);
-      paramKey.set("name", movie.name);
-      paramKey.set("year", movie.year);
-      paramKey.set("poster", movie.poster);
+        const response = await fetch("http://localhost:9000/message/movie/like", {
+            method: "POST",
+            body: paramKey,
+        });
 
-      const response = await fetch("http://localhost:9000/message/movie/like", {
-        method: "POST",
-        body: paramKey,
-      });
-
-        if (response.ok) {
-            alert("Фильм добавлен в избранное!");
-        } else {
-            alert("Ошибка при добавлении фильма в избранное.");
-        }
+        favoriteLabel.style.display = "inline";
     });
+
+    // удаление фильма из избранного
+    dislikeButton.addEventListener("click", async () => {
+        let paramKey = new FormData();
+        paramKey.set("key", key);
+        paramKey.set("movieID", movie.id);
+
+        const response = await fetch("http://localhost:9000/message/movie/dislike", {
+            method: "POST",
+            body: paramKey,
+        });
+
+        favoriteLabel.style.display = "none"; // скрываем элемент при удалении из избранного
+        updateFavoriteMovies(key); // обновляем список избранных фильмов на странице
+    });
+
+    // добавляем элементы в контейнер div
+    const buttonsDiv = document.createElement("div");
+    buttonsDiv.appendChild(likeButton);
+    buttonsDiv.appendChild(dislikeButton);
 
     movieDiv.appendChild(name);
     movieDiv.appendChild(year);
     movieDiv.appendChild(poster);
-    movieDiv.appendChild(likeButton);
+    movieDiv.appendChild(buttonsDiv);
+    movieDiv.appendChild(favoriteLabel);
 
     return movieDiv;
+}
+
+// выводим фильмы пользователя из "избранного"
+function favoriteMovies(key) {
+    const favoritesButton = document.getElementById('favorites-button');
+    const favoritesResults = document.getElementById('favorites-container');
+
+    favoritesButton.addEventListener("click", async () => {
+        let paramKey = new FormData();
+        paramKey.set("key", key);
+
+        const response = await fetch('http://localhost:9000/message/movie/favorites', {
+            method: "POST",
+            body: paramKey,
+        });
+
+        const movies = await response.json();
+
+        movies.forEach(movie => {
+            const movieFavorite = createMovieElement(movie, key);
+            favoritesResults.appendChild(movieFavorite);
+        });
+
+        // Скрываем все блоки на странице, кроме блока с понравившимися фильмами
+        const allBlocks = document.querySelectorAll('body > div:not(#favorites-movies)');
+        allBlocks.forEach(block => block.style.display = 'none');
+    });
 }
 
 /* отправляет фильм по поиску пользователю, поиск показывает все фильмы который содержит одинаковую строку,
@@ -262,6 +348,10 @@ function searchMovies() {
                 }
             });
         }
+
+        // Скрываем все блоки на странице, кроме блока с понравившимися фильмами
+        const allBlocks = document.querySelectorAll('body > div:not(#search-movies)');
+        allBlocks.forEach(block => block.style.display = 'none');
     });
 }
 
@@ -293,6 +383,7 @@ function main() {
     registrationButton();
     loginButton();
     presenceKey();
+    favoriteMovies();
     searchMovies();
 }
 

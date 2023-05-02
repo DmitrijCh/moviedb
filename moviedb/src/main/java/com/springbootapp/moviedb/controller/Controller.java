@@ -51,9 +51,29 @@ public class Controller {
         return storage.searchMovies(name);
     }
 
+//    @PostMapping("/message/movie/like")
+//    public List<Movie> likeMovies(@RequestParam String key, @RequestParam String name, @RequestParam String year, @RequestParam String poster) throws SQLException {
+//        return storage.getLikeMovie(key, name, year, poster);
+//    }
+
     @PostMapping("/message/movie/like")
-    public List<Movie> likeMovies(@RequestParam String key, @RequestParam String name, @RequestParam String year, @RequestParam String poster) throws SQLException {
-        return storage.getLikeMovie(key, name, year, poster);
+    public List<Movie> likeMovies(@RequestParam String key, @RequestParam int movieID) throws SQLException {
+        return storage.getLikeMovie(key, movieID);
+    }
+
+//    @PostMapping("/message/movie/dislike")
+//    public List<Movie> dislikeMovies(@RequestParam String key, @RequestParam String name, @RequestParam String year, @RequestParam String poster) throws SQLException {
+//        return storage.deleteLikeMovie(key, name, year, poster);
+//    }
+
+    @PostMapping("/message/movie/dislike")
+    public List<Movie> dislikeMovies(@RequestParam String key, @RequestParam int movieID) throws SQLException {
+        return storage.deleteLikeMovie(key, movieID);
+    }
+
+    @PostMapping("/message/movie/favorites")
+    public List<Movie> favoriteMovies(@RequestParam String key) throws SQLException {
+        return storage.getFavoriteMovies(key);
     }
 }
 

@@ -104,7 +104,7 @@ public class Storage {
 
     public List<Movie> getMovie(String key, int count, int offset) throws SQLException {
         List<Movie> result = new ArrayList<>();
-        String query = "SELECT name, year, poster FROM movies WHERE EXISTS (SELECT 1 FROM session_keys WHERE key = ?) ORDER BY id LIMIT ? OFFSET ?";
+        String query = "SELECT id, name, year, poster FROM movies WHERE EXISTS (SELECT 1 FROM session_keys WHERE key = ?) ORDER BY id LIMIT ? OFFSET ?";
         PreparedStatement statement = connection.prepareStatement(query);
         statement.setString(1, key);
         statement.setInt(2, count);
@@ -114,6 +114,7 @@ public class Storage {
 
         while (resultSet.next()) {
             Movie movie = new Movie();
+            movie.setId(Integer.valueOf(resultSet.getString("id")));
             movie.setName(resultSet.getString("name"));
             movie.setYear(resultSet.getString("year"));
             movie.setPoster(resultSet.getString("poster"));
@@ -142,22 +143,140 @@ public class Storage {
         return movies;
     }
 
-    public List<Movie> getLikeMovie(String key, String name, String year, String poster) throws SQLException {
-        String query = "INSERT INTO like_movies (user_login, name, year, poster) " +
-                "SELECT user_login, ?, ?, ? FROM session_keys WHERE key = ?";
+//    public List<Movie> getLikeMovie(String key, String name, String year, String poster) throws SQLException {
+//
+//        String query = "INSERT INTO like_movies (user_login, name, year, poster) " +
+//                "SELECT user_login, ?, ?, ? FROM session_keys WHERE key = ?";
+//
+//        PreparedStatement statement = connection.prepareStatement(query);
+//        statement.setString(1, name);
+//        statement.setString(2, year);
+//        statement.setString(3, poster);
+//        statement.setString(4, key);
+//        statement.executeUpdate();
+//
+//        List<Movie> movies = new ArrayList<>();
+//        Movie movie = new Movie();
+//        movie.setName(name);
+//        movie.setYear(year);
+//        movie.setPoster(poster);
+//        movies.add(movie);
+//        return movies;
+//    }
+
+    public List<Movie> getLikeMovie(String key, int movieId) throws SQLException {
+
+        String insertQuery = "INSERT INTO like_movies (user_login, movie_id) " +
+                "SELECT user_login, ? FROM session_keys WHERE key = ?";
+        PreparedStatement insertStatement = connection.prepareStatement(insertQuery);
+        insertStatement.setInt(1, movieId);
+        insertStatement.setString(2, key);
+        insertStatement.executeUpdate();
+
+        List<Movie> movies = new ArrayList<>();
+
+        String retrieveQuery = "SELECT * FROM movies WHERE id = ?";
+
+        PreparedStatement retrieveStatement = connection.prepareStatement(retrieveQuery);
+        retrieveStatement.setInt(1, movieId);
+
+        ResultSet resultSet = retrieveStatement.executeQuery();
+
+        if (resultSet.next()) {
+            Movie movie = new Movie();
+            movie.setId(resultSet.getInt("id"));
+            movie.setName(resultSet.getString("name"));
+            movie.setYear(resultSet.getString("year"));
+            movie.setPoster(resultSet.getString("poster"));
+            // Add the retrieved movie object to the 'movies' list
+            movies.add(movie);
+        }
+        return movies;
+    }
+
+//    public List<Movie> deleteLikeMovie(String key, String name, String year, String poster) throws SQLException {
+//
+//        String query = "DELETE FROM like_movies WHERE user_login = (SELECT user_login FROM session_keys WHERE key = ?) AND name = ? AND year = ? AND poster = ?";
+//
+//        PreparedStatement statement = connection.prepareStatement(query);
+//        statement.setString(1, key);
+//        statement.setString(2, name);
+//        statement.setString(3, year);
+//        statement.setString(4, poster);
+//        statement.executeUpdate();
+//
+//            List<Movie> movies = new ArrayList<>();
+//            Movie movie = new Movie();
+//            movie.setName(name);
+//            movie.setYear(year);
+//            movie.setPoster(poster);
+//            movies.add(movie);
+//            return movies;
+//        }
+
+    public List<Movie> deleteLikeMovie(String key, int movieID) throws SQLException {
+
+        String query = "DELETE FROM like_movies WHERE user_login = (SELECT user_login FROM session_keys WHERE key = ?) AND movie_id = ?";
+
         PreparedStatement statement = connection.prepareStatement(query);
-        statement.setString(1, name);
-        statement.setString(2, year);
-        statement.setString(3, poster);
-        statement.setString(4, key);
+        statement.setString(1, key);
+        statement.setInt(2, movieID);
         statement.executeUpdate();
 
         List<Movie> movies = new ArrayList<>();
         Movie movie = new Movie();
-        movie.setName(name);
-        movie.setYear(year);
-        movie.setPoster(poster);
+        movie.setId(movieID);
         movies.add(movie);
         return movies;
     }
+
+//    public List<Movie> getFavoriteMovies(String key) throws SQLException {
+//        List<Movie> result = new ArrayList<>();
+//
+//        String query = "SELECT like_movies.name, like_movies.year, like_movies.poster \n" +
+//                "FROM like_movies \n" +
+//                "INNER JOIN session_keys ON session_keys.user_login = like_movies.user_login \n" +
+//                "WHERE session_keys.key = ?";
+//
+//        PreparedStatement statement = connection.prepareStatement(query);
+//        statement.setString(1, key);
+//
+//        ResultSet resultSet = statement.executeQuery();
+//
+//        while (resultSet.next()) {
+//            Movie movie = new Movie();
+//            movie.setName(resultSet.getString("name"));
+//            movie.setYear(resultSet.getString("year"));
+//            movie.setPoster(resultSet.getString("poster"));
+//            result.add(movie);
+//        }
+//        return result;
+//    }
+
+    public List<Movie> getFavoriteMovies(String key) throws SQLException {
+        List<Movie> result = new ArrayList<>();
+
+        String query = "SELECT like_movies.movie_id, movies.name, movies.year, movies.poster " +
+                "FROM like_movies " +
+                "INNER JOIN session_keys ON session_keys.user_login = like_movies.user_login " +
+                "INNER JOIN movies ON like_movies.movie_id = movies.id " +
+                "WHERE session_keys.key = ?";
+
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, key);
+
+        ResultSet resultSet = statement.executeQuery();
+
+        while (resultSet.next()) {
+            Movie movie = new Movie();
+            movie.setId(resultSet.getInt("movie_id"));
+            movie.setName(resultSet.getString("name"));
+            movie.setYear(resultSet.getString("year"));
+            movie.setPoster(resultSet.getString("poster"));
+            result.add(movie);
+        }
+        return result;
+    }
 }
+
+

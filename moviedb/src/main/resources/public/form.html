@@ -5,7 +5,6 @@
     <title>Authorization</title>
     <link rel="stylesheet" href="style.css" type="text/css">
 </head>
-
 <body>
 <div id="authorization">
     <form action="http://localhost:9000/authorization" method="post" id="authorization-form">
@@ -36,14 +35,19 @@
     <a href="http://localhost:9000/authorization">Войти в аккаунт</a>
 </div>
 
-<div id="search-movies">
+<div id="search-movies" style="display:none;">
     <input type="text" id="search-bar" placeholder="Поиск по фильмам...">
-    <button id="search-button">Поиск</button>
+    <button id="search-button">&#128269;</button>
     <div id="search-results"></div>
 </div>
 
 <div id="hello-user" style="display:none;">
     <button id="output-button">Выход</button>
+</div>
+
+<div id="favorites-movies" style="display:none;">
+    <button id="favorites-button">Показать избранное</button>
+    <div id="favorites-container"></div>
 </div>
 
 <div id="movie"></div>

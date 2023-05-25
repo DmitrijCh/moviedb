@@ -41,10 +41,5 @@ public class Movie {
     public void setPoster(String poster) {
         this.poster = poster;
     }
-
-    @Override
-    public String toString() {
-        return name + " " + year + " " + poster + " ";
-    }
 }
 

@@ -4,10 +4,12 @@
     <meta charset="utf-8">
     <title>Authorization</title>
     <link rel="stylesheet" href="style.css" type="text/css">
+    <script src='https://www.google.com/recaptcha/api.js'></script>
 </head>
 <body>
 <div id="authorization">
-    <form action="http://localhost:9000/authorization" method="post" id="authorization-form">
+    <form action="http://localhost:9000/authorization" method="post" id="authorization-form" class="g-recaptcha"
+          data-sitekey="6LfSueMlAAAAACmmTTHOwGUwZs0NlJzcvLodNyxV">
         <label>
             <input type="text" required name="login" placeholder="Login"/>
         </label>
@@ -48,6 +50,24 @@
 <div id="favorites-movies" style="display:none;">
     <button id="favorites-button">Показать избранное</button>
     <div id="favorites-container"></div>
+</div>
+
+<div id="movie-details" style="display:none;">
+    <h2 id="movie-name"></h2>
+    <img id="movie-poster" src="" alt="Movie Poster">
+    <p id="movie-year"></p>
+    <p id="movie-description"></p>
+    <p id="movie-desc"></p>
+    <p id="movie-time"></p>
+    <p id="movie-slogan"></p>
+    <p id="movie-age"></p>
+    <p id="movie-budget"></p>
+    <p id="movie-country"></p>
+    <p id="movie-type"></p>
+</div>
+
+<div id="movie-rat">
+    <p id="movie-rating"></p>
 </div>
 
 <div id="movie"></div>

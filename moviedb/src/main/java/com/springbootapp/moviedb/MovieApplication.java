@@ -48,6 +48,5 @@ public class MovieApplication implements CommandLineRunner {
     }
 }
 
-
 //https://kinobd.ru/api/films?page=17739
 

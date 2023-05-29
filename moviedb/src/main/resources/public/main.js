@@ -232,7 +232,7 @@ async function verificationMovie(key) {
 }
 
 // Собираем все элементы фильма, добавляем понравившиеся фильмы в избранное, так же удаляем фильмы из избранного
-function createMovieElement(movie, key, consoleOutput) {
+function createMovieElement(movie, key) {
     const movieDiv = document.createElement("div");
     const id = document.createElement("p");
     const name = document.createElement("h2");

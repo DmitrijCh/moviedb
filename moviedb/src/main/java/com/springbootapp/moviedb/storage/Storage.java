@@ -180,14 +180,9 @@ public class Storage {
 
     public List<MovieRating> getOverallRating() {
         String query = "SELECT movie_id, AVG(CAST(rating AS numeric)) AS avg_rating " +
-                "FROM rating_movies " +
-                "WHERE movie_id IN (" +
-                "    SELECT movie_id " +
-                "    FROM rating_movies " +
-                "    GROUP BY movie_id " +
-                "    HAVING COUNT(DISTINCT user_login) > 1 " +
-                ") " +
-                "GROUP BY movie_id";
+        "FROM rating_movies " +
+        "GROUP BY movie_id " +
+        "HAVING COUNT(DISTINCT user_login) > 1";
 
         return jdbcTemplate.query(query, (resultSet, rowNum) -> {
             MovieRating movieRating = new MovieRating();

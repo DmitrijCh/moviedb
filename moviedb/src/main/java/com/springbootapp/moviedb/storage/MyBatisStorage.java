@@ -6,7 +6,6 @@ import com.springbootapp.moviedb.model.*;
 import com.springbootapp.moviedb.mybatis.*;
 import com.springbootapp.moviedb.token.Timestamp;
 import com.springbootapp.moviedb.token.TokenUsers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +15,15 @@ import java.util.List;
 @Component
 @Qualifier("mybatis")
 public class MyBatisStorage implements Storage {
+
+    private final TokenUsers tokenUsers;
+    private final Timestamp timestamp;
+    private final KeyMapper keyMapper;
+    private final MovieInformMapper movieInformMapper;
+    private final MovieMapper movieMapper;
+    private final MovieRatingMapper movieRatingMapper;
+    private final UserMapper userMapper;
+    private final CommentMoviesMapper commentMoviesMapper;
 
     public MyBatisStorage(TokenUsers tokenUsers, Timestamp timestamp, KeyMapper keyMapper,
                           MovieInformMapper movieInformMapper, MovieMapper movieMapper,
@@ -30,15 +38,6 @@ public class MyBatisStorage implements Storage {
         this.userMapper = userMapper;
         this.commentMoviesMapper = commentMoviesMapper;
     }
-
-    private final TokenUsers tokenUsers;
-    private final Timestamp timestamp;
-    private final KeyMapper keyMapper;
-    private final MovieInformMapper movieInformMapper;
-    private final MovieMapper movieMapper;
-    private final MovieRatingMapper movieRatingMapper;
-    private final UserMapper userMapper;
-    private final CommentMoviesMapper commentMoviesMapper;
 
     @Override
     public void addUsers(String name, String login, String password) {

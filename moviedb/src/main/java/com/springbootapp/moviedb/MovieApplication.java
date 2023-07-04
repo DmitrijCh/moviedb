@@ -22,10 +22,9 @@ public class MovieApplication implements CommandLineRunner {
 
     public static void main(String[] args) {
         SpringApplication.run(MovieApplication.class, args);
-
     }
 
-    @Scheduled(fixedRate = 10800000) // запускать каждые 3 часа
+    @Scheduled(fixedRate = 10800000)
     public void scheduleTask() throws Exception {
         run();
     }
@@ -47,6 +46,4 @@ public class MovieApplication implements CommandLineRunner {
 //        }
     }
 }
-
-//https://kinobd.ru/api/films?page=17739
 

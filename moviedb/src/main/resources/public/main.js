@@ -1,6 +1,6 @@
 'use strict';
 
-// переключение между формой регистрации и авторизацией
+// Переключение между формой регистрации и авторизацией
 function showRegistration() {
     const reg = document.getElementById('registration');
     const login = document.getElementById('authorization');
@@ -10,12 +10,12 @@ function showRegistration() {
     }
 }
 
-// Регистрация
-// форма регистрации
+// Регистрация (форма регистрации)
 function registrationForm() {
     const hello = document.getElementById('hello-user');
     const movies = document.getElementById('search-movies');
     const likeMovies = document.getElementById('favorites-movies');
+    const typeMovies = document.getElementById('movie-types');
     const descriptionMovies = document.getElementById('movie-details');
     const registration = document.getElementById('registration');
 
@@ -30,6 +30,13 @@ function registrationForm() {
         likeMovies.style.display = 'none';
     } else {
         likeMovies.style.display = 'block';
+        registration.style.display = 'none';
+    }
+
+    if (typeMovies.style.display === 'block') {
+        typeMovies.style.display = 'none';
+    } else {
+        typeMovies.style.display = 'block';
         registration.style.display = 'none';
     }
 
@@ -48,7 +55,7 @@ function registrationForm() {
     }
 }
 
-// отправка форы регистрации и получение "ключа"
+// Отправка форы регистрации и получение "ключа"
 function registration() {
     const regForm = document.getElementById('registration-form');
     regForm.addEventListener('submit', async function (e) {
@@ -71,12 +78,12 @@ function registration() {
     });
 }
 
-// Авторизация
-// форма авторизации
+// Авторизация (форма авторизации)
 function authorizationForm() {
     const hello = document.getElementById("hello-user");
     const movies = document.getElementById('search-movies');
     const likeMovies = document.getElementById('favorites-movies');
+    const typeMovies = document.getElementById('movie-types');
     const descriptionMovies = document.getElementById('movie-details');
     const authorization = document.getElementById('authorization');
 
@@ -91,6 +98,13 @@ function authorizationForm() {
         likeMovies.style.display = 'none';
     } else {
         likeMovies.style.display = 'block';
+        authorization.style.display = 'none';
+    }
+
+    if (typeMovies.style.display === 'block') {
+        typeMovies.style.display = 'none';
+    } else {
+        typeMovies.style.display = 'block';
         authorization.style.display = 'none';
     }
 
@@ -109,7 +123,7 @@ function authorizationForm() {
     }
 }
 
-// отправка форы авторизации и получение "ключа"
+// Отправка форы авторизации и получение "ключа"
 function authorization() {
     const authForm = document.getElementById('authorization-form');
     authForm.addEventListener('submit', async function (e) {
@@ -130,13 +144,11 @@ function authorization() {
             await verificationMovie(json.key);
             await favoriteMovies(localStorage.getItem('key'));
             await userFavoriteMovies(localStorage.getItem('key'));
-            await favoriteMovies(localStorage.getItem('key'))
         }
     });
 }
 
-// Ключ-сессии
-// принимает ключ, проверяет данные пользователя, после отправляет приветсвие пользователю
+// Ключ-сессии - принимает ключ, проверяет данные пользователя, после отправляет приветсвие пользователю
 async function verificationUser(key) {
     let paramKey = new FormData();
     paramKey.set('key', key);
@@ -152,22 +164,25 @@ async function verificationUser(key) {
     outputButton();
 }
 
-// если в localStorage есть ключ - блок регистрации или авторизации сменяется блоком приветствия пользователя
+// Если в localStorage есть ключ - блок регистрации или авторизации сменяется блоком приветствия пользователя
 function presenceKey() {
     const authorization = document.getElementById('authorization');
     const hello = document.getElementById('hello-user');
     const movies = document.getElementById('search-movies');
     const likeMovies = document.getElementById('favorites-movies');
+    const typeMovies = document.getElementById('movie-types');
 
     if (localStorage.getItem('key') !== null) {
         if (hello.style.display === 'block') {
             hello.style.display = 'none';
             movies.style.display = 'none';
             likeMovies.style.display = 'none';
+            typeMovies.style.display = 'none';
         } else {
             hello.style.display = 'block';
             movies.style.display = 'block';
             likeMovies.style.display = 'block';
+            typeMovies.style.display = 'block';
             authorization.style.display = 'none';
             void verificationUser(localStorage.getItem('key'));
             void verificationMovie(localStorage.getItem('key'));
@@ -175,19 +190,43 @@ function presenceKey() {
             void userFavoriteMovies(localStorage.getItem('key'));
             void userMovieRating(localStorage.getItem('key'))
             void allMovieRating(localStorage.getItem('key'))
+            void ping(localStorage.getItem('key'))
         }
     }
 }
 
-// отправляет список фильмов пользователю, выводим фильмы по нажатию кнопки
+// Отправляет список фильмов пользователю, выводим фильмы по нажатию кнопки
 let loadedMoviesCount = 0;
 let loadMoreButton = null;
+let typeMov = "";
+
+document.getElementById("movie-type-select").addEventListener("change", function () {
+    typeMov = this.options[this.selectedIndex].value;
+    loadedMoviesCount = 0;
+    document.getElementById("movie").innerHTML = "";
+    void verificationMovie(key);
+});
+
+window.addEventListener("load", function () {
+    const selectElement = document.getElementById("movie-type-select");
+    selectElement.selectedIndex = 0;
+    typeMov = selectElement.options[0].value;
+    loadedMoviesCount = 0;
+    document.getElementById("movie").innerHTML = "";
+    void verificationMovie(key);
+});
 
 async function verificationMovie(key) {
+    if (!typeMov) {
+        typeMov = "all";
+    }
+
     let paramKey = new FormData();
     paramKey.set("key", key);
     paramKey.set("count", 16);
     paramKey.set("offset", loadedMoviesCount);
+    paramKey.set("type", typeMov);
+
 
     const response = await fetch("http://localhost:9000/message/movie", {
         method: "POST",
@@ -205,35 +244,29 @@ async function verificationMovie(key) {
 
     loadedMoviesCount += movies.length;
 
-    // проверяем наличие переменной для кнопки "Добавить еще"
     if (!loadMoreButton) {
-        // если переменная отсутствует, создаем кнопку "Добавить еще"
         loadMoreButton = document.createElement("button");
         loadMoreButton.style.textAlign = "center";
         loadMoreButton.style.height = "50px";
         loadMoreButton.style.width = "1400px";
         loadMoreButton.textContent = "Добавить еще";
 
-        // добавляем обработчик события на нажатие кнопки
         loadMoreButton.addEventListener("click", () => {
             verificationMovie(key);
         });
     }
-
-    // создаем элемент div для кнопки "Добавить еще"
     const loadMoreDiv = document.createElement("div");
     loadMoreDiv.style.textAlign = "center";
-
-    // добавьте кнопку "Добавить еще" в элемент div
     loadMoreDiv.appendChild(loadMoreButton);
 
-    // добавьте элемент div к родительскому элементу списка фильмов.
     document.getElementById("movie").parentNode.appendChild(loadMoreDiv);
 }
 
 // Собираем все элементы фильма, добавляем понравившиеся фильмы в избранное, так же удаляем фильмы из избранного
 function createMovieElement(movie, key) {
     const movieDiv = document.createElement("div");
+    const buttonsDiv = document.createElement("div");
+    const buttonDiv = document.createElement("div");
     const id = document.createElement("p");
     const name = document.createElement("h2");
     const year = document.createElement("p");
@@ -247,12 +280,13 @@ function createMovieElement(movie, key) {
     const poster = document.createElement("img");
     const likeButton = document.createElement("button");
     const dislikeButton = document.createElement("button");
-    const descriptionButton = document.createElement("button");
+    const descriptionButton = document.createElement("a");
     const starButton = document.createElement("button");
     const favoriteLabel = document.createElement("span");
     const timeDiv = document.createElement("div");
     const rating = document.createElement("p");
     const allRating = document.createElement("p");
+    const commentButton = document.createElement("button");
 
     id.textContent = movie.id;
     name.textContent = movie.name;
@@ -267,6 +301,7 @@ function createMovieElement(movie, key) {
     // rating.textContent = movie.rating
 
     id.style.display = "none";
+    year.style.display = "none";
     time.style.display = "none";
     description.style.display = "none"
     slogan.style.display = "none"
@@ -275,17 +310,28 @@ function createMovieElement(movie, key) {
     country.style.display = "none"
     type.style.display = "none"
 
-    descriptionButton.style.width = "95px";
+    buttonDiv.style.display = "inline-flex";
+    buttonDiv.style.flexDirection = "column";
+    buttonDiv.style.justifyContent = "flex-start";
+    buttonDiv.style.marginLeft = "10px";
+    buttonDiv.style.position = "relative";
+    buttonDiv.style.top = "-155px";
+
+    buttonsDiv.style.marginTop = "-140px";
+
+    descriptionButton.style.width = "80px";
     descriptionButton.style.marginTop = "10px";
     descriptionButton.textContent = "Описание";
     descriptionButton.style.marginRight = "10px";
+    descriptionButton.style.textDecoration = "underline";
+    descriptionButton.style.fontSize = "24px";
 
-    likeButton.style.width = "65px";
+    likeButton.style.width = "55px";
     likeButton.style.marginTop = "10px";
     likeButton.style.marginRight = "10px";
     likeButton.textContent = "👍";
 
-    dislikeButton.style.width = "65px";
+    dislikeButton.style.width = "55px";
     dislikeButton.style.marginTop = "10px";
     dislikeButton.style.marginRight = "10px";
     dislikeButton.style.display = "none";
@@ -293,17 +339,21 @@ function createMovieElement(movie, key) {
 
     starButton.style.width = "55px";
     starButton.style.marginTop = "10px";
+    starButton.style.marginRight = "10px";
     starButton.textContent = "⭐️";
+
+    commentButton.style.width = "55px";
+    commentButton.style.marginTop = "10px";
+    commentButton.textContent = "✍️";
 
     favoriteLabel.textContent = "Фильм добавлен в избранное!";
     favoriteLabel.style.display = "none";
     favoriteLabel.style.fontSize = "18px";
 
     rating.style.fontSize = "18px";
-
     allRating.style.fontSize = "18px";
 
-    // добавление фильма в избранное
+    // Добавление фильма в избранное
     likeButton.addEventListener("click", async () => {
         let paramKey = new FormData();
         paramKey.set("key", key);
@@ -314,12 +364,12 @@ function createMovieElement(movie, key) {
             body: paramKey,
         });
 
-        likeButton.style.display = "none"; // скрываем кнопку "Нравится"
-        dislikeButton.style.display = "inline"; // отображаем кнопку "Дизлайк"
-        favoriteLabel.style.display = "inline"; // отображаем метку "Добавлено в избранное"
+        likeButton.style.display = "none";
+        dislikeButton.style.display = "inline";
+        favoriteLabel.style.display = "inline";
     });
 
-    // удаление фильма из избранного
+    // Удаление фильма из избранного
     dislikeButton.addEventListener("click", async () => {
         let paramKey = new FormData();
         paramKey.set("key", key);
@@ -330,13 +380,13 @@ function createMovieElement(movie, key) {
             body: paramKey,
         });
 
-        dislikeButton.style.display = "none"; // скрываем элемент при удалении из избранного
+        dislikeButton.style.display = "none";
         favoriteLabel.style.display = "none";
         likeButton.style.display = "inline";
         favoriteLabel.style.display = "none";
     });
 
-    // описание фильмов
+    // Описание фильмов
     descriptionButton.addEventListener("click", () => {
 
         const movieDescription = "Описание фильма:";
@@ -345,16 +395,20 @@ function createMovieElement(movie, key) {
 
         const movieYearLabel = document.createElement("span");
         movieYearLabel.textContent = "Год производства: ";
+        movieYearLabel.style.color = '#006400';
         const movieYearValue = document.createElement("span");
         movieYearValue.textContent = movie.year;
+        movieYearValue.style.color = '#006400';
         document.getElementById("movie-year").innerHTML = "";
         document.getElementById("movie-year").appendChild(movieYearLabel);
         document.getElementById("movie-year").appendChild(movieYearValue);
 
         const movieTimeLabel = document.createElement("span");
         movieTimeLabel.textContent = "Продолжительность: ";
+        movieTimeLabel.style.color = '#006400';
         const movieTimeValue = document.createElement("span");
         movieTimeValue.textContent = movie.time;
+        movieTimeValue.style.color = '#006400';
         document.getElementById("movie-time").innerHTML = "";
         document.getElementById("movie-time").appendChild(movieTimeLabel);
         document.getElementById("movie-time").appendChild(movieTimeValue);
@@ -363,40 +417,50 @@ function createMovieElement(movie, key) {
 
         const movieSloganLabel = document.createElement("span");
         movieSloganLabel.textContent = "Слоган: ";
+        movieSloganLabel.style.color = '#006400';
         const movieSloganValue = document.createElement("span");
         movieSloganValue.textContent = movie.slogan;
+        movieSloganValue.style.color = '#006400';
         document.getElementById("movie-slogan").innerHTML = "";
         document.getElementById("movie-slogan").appendChild(movieSloganLabel);
         document.getElementById("movie-slogan").appendChild(movieSloganValue);
 
         const movieAgeLabel = document.createElement("span");
         movieAgeLabel.textContent = "Возраст: ";
+        movieAgeLabel.style.color = "#006400";
         const movieAgeValue = document.createElement("span");
         movieAgeValue.textContent = movie.age;
+        movieAgeValue.style.color = "#006400";
         document.getElementById("movie-age").innerHTML = "";
         document.getElementById("movie-age").appendChild(movieAgeLabel);
         document.getElementById("movie-age").appendChild(movieAgeValue);
 
         const movieBudgetLabel = document.createElement("span");
         movieBudgetLabel.textContent = "Бюджет: ";
+        movieBudgetLabel.style.color = "#006400";
         const movieBudgetValue = document.createElement("span");
         movieBudgetValue.textContent = movie.budget;
+        movieBudgetValue.style.color = "#006400";
         document.getElementById("movie-budget").innerHTML = "";
         document.getElementById("movie-budget").appendChild(movieBudgetLabel);
         document.getElementById("movie-budget").appendChild(movieBudgetValue);
 
         const movieCountryLabel = document.createElement("span");
         movieCountryLabel.textContent = "Страна: ";
+        movieCountryLabel.style.color = "#006400";
         const movieCountryValue = document.createElement("span");
         movieCountryValue.textContent = movie.country;
+        movieCountryValue.style.color = "#006400";
         document.getElementById("movie-country").innerHTML = "";
         document.getElementById("movie-country").appendChild(movieCountryLabel);
         document.getElementById("movie-country").appendChild(movieCountryValue);
 
         const movieTypeLabel = document.createElement("span");
         movieTypeLabel.textContent = "Тип: ";
+        movieTypeLabel.style.color = "#006400";
         const movieTypeValue = document.createElement("span");
         movieTypeValue.textContent = movie.type;
+        movieTypeValue.style.color = "#006400";
         document.getElementById("movie-type").innerHTML = "";
         document.getElementById("movie-type").appendChild(movieTypeLabel);
         document.getElementById("movie-type").appendChild(movieTypeValue);
@@ -405,16 +469,15 @@ function createMovieElement(movie, key) {
 
         console.log(movieDescription);
 
-        // отобразить описание фильма
         document.getElementById("movie-description").textContent = movieDescription;
         document.getElementById("movie-details").style.display = "block";
+        document.getElementById("movie-details").style.color = "#006400";
 
-        // скрываем все блоки на странице, кроме блока с описанием фильма
         const allBlocks = document.querySelectorAll('body > div:not(#movie-details)');
         allBlocks.forEach(block => block.style.display = 'none');
     });
 
-    // рейтинг фильма
+    // Рейтинг фильма
     starButton.addEventListener("click", async () => {
         const movieRating = "рейтинг:";
 
@@ -457,7 +520,78 @@ function createMovieElement(movie, key) {
         movieDiv.appendChild(popupContainer);
     });
 
-    // получение рейтинга фильма и присваивание его элементу rating
+    // Возможность пользователю оставить комментарий
+    commentButton.addEventListener('click', async function () {
+        document.body.innerHTML = '';
+
+        const commentForm = document.createElement('form');
+        const commentsDiv = document.createElement('div');
+        const commentsHeader = document.createElement('h2');
+        const userLoginRow = document.createElement('p');
+        const existingComments = document.createElement('div');
+        const commentTextarea = document.createElement('textarea');
+        const publishButton = document.createElement('button');
+
+        commentsHeader.textContent = 'Оставьте свой отзыв';
+        commentsHeader.style.color = '#006400';
+        publishButton.textContent = 'Опубликовать';
+        publishButton.style.width = '150px';
+        commentsDiv.style.display = 'flex';
+        commentsDiv.style.flexDirection = 'column';
+        commentsDiv.style.alignItems = 'center';
+        commentsDiv.style.color = '#006400';
+        commentForm.style.display = 'flex';
+        commentForm.style.flexDirection = 'column';
+        commentForm.style.alignItems = 'center';
+        commentTextarea.rows = 15;
+        commentTextarea.cols = 70;
+
+        const movieID = movie.id;
+
+        const comments = await loadComments(movieID);
+
+        comments.forEach(comment => {
+            const loginElement = document.createElement('p');
+            loginElement.textContent = comment.userLogin;
+            loginElement.style.marginTop = "50px";
+            existingComments.appendChild(loginElement);
+
+            const commentElement = document.createElement('p');
+            commentElement.textContent = comment.comment;
+            commentElement.style.marginLeft = '30px';
+            existingComments.appendChild(commentElement);
+        });
+
+        commentForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const formData = new FormData();
+            formData.append('key', key);
+            formData.append('movieID', movie.id);
+            formData.append('comment', commentTextarea.value);
+
+            const response = await fetch('http://localhost:9000/message/movie/comment', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const newComment = document.createElement("p");
+            newComment.textContent = commentTextarea.value;
+            existingComments.appendChild(newComment);
+
+            commentTextarea.value = "";
+        });
+
+        commentsDiv.appendChild(commentsHeader);
+        commentsDiv.appendChild(commentTextarea);
+        commentsDiv.appendChild(commentForm);
+        commentsDiv.appendChild(existingComments);
+        commentForm.appendChild(publishButton);
+        commentForm.appendChild(userLoginRow);
+
+        document.body.appendChild(commentsDiv);
+    });
+
     userMovieRating(key)
         .then(movieRatings => {
             const userRating = movieRatings.find(movieRating => movieRating.id === movie.id);
@@ -469,7 +603,6 @@ function createMovieElement(movie, key) {
             console.error("Ошибка при получении рейтинга фильма:", error);
         });
 
-    // получение рейтинга фильма и присваивание его элементу rating
     allMovieRating(key)
         .then(movieRatings => {
             const allUserRating = movieRatings.find(movieRating => movieRating.id === movie.id);
@@ -481,31 +614,29 @@ function createMovieElement(movie, key) {
             console.error("Ошибка при получении рейтинга фильма:", error);
         });
 
-    // получение понравившегося фильма пользователю
     userFavoriteMovies(key)
         .then(consoleOutputs => {
             const userFavorite = consoleOutputs.find(consoleOutput => consoleOutput.id === movie.id);
             if (userFavorite) {
-                likeButton.style.display = "none"; // скрываем кнопку "Нравится"
-                dislikeButton.style.display = "inline"; // отображаем кнопку "Дизлайк"
-                favoriteLabel.style.display = "inline"; // отображаем метку "Добавлено в избранное"
+                likeButton.style.display = "none";
+                dislikeButton.style.display = "inline";
+                favoriteLabel.style.display = "inline";
             } else {
-                likeButton.style.display = "inline"; // отображаем кнопку "Нравится"
-                dislikeButton.style.display = "none"; // скрываем кнопку "Дизлайк"
-                favoriteLabel.style.display = "none"; // скрываем метку "Добавлено в избранное"
+                likeButton.style.display = "inline";
+                dislikeButton.style.display = "none";
+                favoriteLabel.style.display = "none";
             }
         })
         .catch(error => {
             console.error("Ошибка при получении статуса фильма:", error);
         });
 
-
-    // добавление элементов в контейнер div
-    const buttonsDiv = document.createElement("div");
+    buttonDiv.appendChild(poster);
+    buttonDiv.appendChild(likeButton);
+    buttonDiv.appendChild(dislikeButton);
+    buttonDiv.appendChild(starButton);
+    buttonDiv.appendChild(commentButton);
     buttonsDiv.appendChild(descriptionButton);
-    buttonsDiv.appendChild(likeButton);
-    buttonsDiv.appendChild(dislikeButton);
-    buttonsDiv.appendChild(starButton);
 
     movieDiv.appendChild(id);
     movieDiv.appendChild(name);
@@ -518,6 +649,7 @@ function createMovieElement(movie, key) {
     movieDiv.appendChild(country);
     movieDiv.appendChild(type);
     movieDiv.appendChild(poster);
+    movieDiv.appendChild(buttonDiv);
     movieDiv.appendChild(buttonsDiv);
     movieDiv.appendChild(favoriteLabel);
     movieDiv.appendChild(timeDiv);
@@ -527,7 +659,7 @@ function createMovieElement(movie, key) {
     return movieDiv;
 }
 
-// получаем избранные фильмы от пользователя
+// Получаем избранные фильмы от пользователя
 async function userFavoriteMovies(key) {
     const formData = new FormData();
     formData.append('key', key);
@@ -542,7 +674,7 @@ async function userFavoriteMovies(key) {
     return json;
 }
 
-// получаем рейтинг от пользователя
+// Получаем рейтинг от пользователя
 async function userMovieRating(key) {
     let paramRating = new FormData();
     paramRating.set("key", key);
@@ -557,7 +689,7 @@ async function userMovieRating(key) {
     return json;
 }
 
-// получаем общий рейтинг
+// Получаем общий рейтинг
 async function allMovieRating() {
     const response = await fetch('http://localhost:9000/message/movie/all_rating', {
         method: 'GET',
@@ -568,7 +700,22 @@ async function allMovieRating() {
     return json;
 }
 
-// выводим фильмы пользователя из "избранного"
+// Получаем комментарии пользователей
+async function loadComments(movieID) {
+    const formData = new FormData();
+    formData.append('movieID', movieID);
+
+    const response = await fetch('http://localhost:9000/message/movie/all_comments', {
+        method: 'POST',
+        body: formData,
+        headers: {'Accept': 'application/json'}
+    });
+
+    const json = await response.json();
+    return json;
+}
+
+// Выводим фильмы пользователя из "избранного"
 function favoriteMovies(key) {
     const favoritesButton = document.getElementById('favorites-button');
     const favoritesResults = document.getElementById('favorites-container');
@@ -584,18 +731,28 @@ function favoriteMovies(key) {
 
         const movies = await response.json();
 
+        favoritesResults.innerHTML = '';
+
         movies.forEach(movie => {
-            const movieFavorite = createMovieElement(movie, key);
+            const movieFavorite = document.createElement('div');
+            const name = document.createElement('h2');
+            const poster = document.createElement('img');
+
+            name.textContent = movie.name;
+            poster.src = movie.poster;
+
+            movieFavorite.appendChild(name);
+            movieFavorite.appendChild(poster);
+
             favoritesResults.appendChild(movieFavorite);
         });
 
-        // Скрываем все блоки на странице, кроме блока с понравившимися фильмами
         const allBlocks = document.querySelectorAll('body > div:not(#favorites-movies)');
         allBlocks.forEach(block => block.style.display = 'none');
     });
 }
 
-/* отправляет фильм по поиску пользователю, поиск показывает все фильмы который содержит одинаковую строку,
+/* Отправляет фильм по поиску пользователю, поиск показывает все фильмы который содержит одинаковую строку,
  также не учитываться регистр
  */
 function searchMovies() {
@@ -638,28 +795,60 @@ function searchMovies() {
                 }
             });
         }
-        // Скрываем все блоки на странице, кроме блока с понравившимися фильмами
+
         const allBlocks = document.querySelectorAll('body > div:not(#search-movies)');
         allBlocks.forEach(block => block.style.display = 'none');
     });
 }
 
-// кнопка отвечающая за переключение между формой регистрации и авторизацией
+// Пользователь отправляет пинг, что он онлайн
+async function ping(key) {
+    const formData = new FormData();
+    formData.append('key', key);
+
+    const response = await fetch('http://localhost:9000/ping', {
+        method: 'POST',
+        body: formData,
+        headers: {'Accept': 'application/json'}
+    });
+
+    const count = await response.text();
+    const label = count === '1' ? 'пользователь онлайн' : 'пользователя(-ей) онлайн';
+
+    const onlineUserDiv = document.getElementById('online-user');
+    onlineUserDiv.style.display = 'flex';
+    onlineUserDiv.style.justifyContent = 'center';
+    onlineUserDiv.style.alignItems = 'center';
+    onlineUserDiv.style.color = '#006400';
+    onlineUserDiv.style.fontSize = '30px';
+
+    onlineUserDiv.innerHTML = `${count} ${label}`;
+
+    return count;
+}
+
+setInterval(async () => {
+    const key = localStorage.getItem('key');
+    const response = await ping(key);
+    console.log(response);
+}, 5000);
+
+// Кнопка отвечающая за переключение между формой регистрации и авторизацией
 function authorizationButton() {
     document.getElementById('auth-button').addEventListener('click', showRegistration);
 }
 
-// кнопка "Регистрация"
+// Кнопка "Регистрация"
 function registrationButton() {
     document.getElementById('reg-button').addEventListener('click', registration)
 }
 
-// кнопка "Вход"
+// Кнопка "Вход"
 function loginButton() {
     document.getElementById('login-button').addEventListener('click', authorization);
 }
 
-// кнопка "Выход" со страницы пользователя
+// Кнопка "Выход" со страницы пользователя
 function outputButton() {
     document.getElementById('output-button').addEventListener('click', () => {
         localStorage.removeItem('key');
@@ -676,5 +865,3 @@ function main() {
 }
 
 main();
-
-

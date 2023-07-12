@@ -10,11 +10,11 @@
         <property name="hibernate.connection.password">193105610</property>
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
 
-        <mapping class="com.springbootapp.moviedb.model.User" />
-        <mapping class="com.springbootapp.moviedb.model.Key" />
-        <mapping class="com.springbootapp.moviedb.model.Movie" />
-        <mapping class="com.springbootapp.moviedb.model.LikeMovies" />
-        <mapping class="com.springbootapp.moviedb.model.MovieRating" />
-        <mapping class="com.springbootapp.moviedb.model.CommentMovies" />
+        <mapping class="com.springbootapp.moviedb.model.User"/>
+        <mapping class="com.springbootapp.moviedb.model.Key"/>
+        <mapping class="com.springbootapp.moviedb.model.Movie"/>
+        <mapping class="com.springbootapp.moviedb.model.LikeMovies"/>
+        <mapping class="com.springbootapp.moviedb.model.MovieRating"/>
+        <mapping class="com.springbootapp.moviedb.model.CommentMovies"/>
     </session-factory>
 </hibernate-configuration>

@@ -386,7 +386,7 @@ function createMovieElement(movie, key) {
         favoriteLabel.style.display = "none";
     });
 
-    // Описание фильмов
+    // Описание фильма
     descriptionButton.addEventListener("click", () => {
 
         const movieDescription = "Описание фильма:";

@@ -2,15 +2,15 @@ package com.springbootapp.moviedb.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springbootapp.moviedb.message.JedisMessage;
+import com.springbootapp.moviedb.message.KafkaMessage;
 import com.springbootapp.moviedb.model.*;
 import com.springbootapp.moviedb.storage.Storage;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import redis.clients.jedis.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,10 +18,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class Controller {
 
     private final Storage storage;
+    private final KafkaMessage kafkaMessage;
+    private final JedisMessage jedisMessage;
 
     @Autowired
-    public Controller(@Qualifier("jdbc") Storage storage) {
+    public Controller(@Qualifier("jdbc") Storage storage, KafkaMessage kafkaMessage, JedisMessage jedisMessage) {
         this.storage = storage;
+        this.kafkaMessage = kafkaMessage;
+        this.jedisMessage = jedisMessage;
     }
 
     @RequestMapping("/authorization")
@@ -76,6 +80,11 @@ public class Controller {
     @PostMapping("/message/movie/like")
     public List<Movie> likeMovies(@RequestParam String key, @RequestParam int movieID) {
         User user = storage.getUser(key);
+
+        String topic = "Test";
+        String message = "Пользователь с логином " + user.getLogin() +
+                " добавил в избранное фильм с id: " + movieID;
+        kafkaMessage.sendMessage(topic, message);
         return storage.getLikeMovie(user, movieID);
     }
 
@@ -118,7 +127,7 @@ public class Controller {
     public String commentMovies(@RequestParam String key, @RequestParam int movieID, @RequestParam String comment) {
         User user = storage.getUser(key);
         storage.addCommentMovie(user, movieID, comment);
-        return "Ok";
+        return "OK";
     }
 
     @PostMapping("/message/movie/all_comments")
@@ -131,26 +140,14 @@ public class Controller {
         User user = storage.getUser(key);
         String name = storage.searchLogin(user);
 
-        try (JedisPool jedisPool = new JedisPool(new JedisPoolConfig(), "localhost")) {
-            try (Jedis jedis = jedisPool.getResource()) {
-                jedis.set(name, "active");
-                jedis.expire(name, 10L);
+        jedisMessage.setKey(name, "active");
+        jedisMessage.deleteExpiredKeys();
 
-                Set<String> expiredKeys = jedis.keys("*").stream()
-                        .filter(k -> jedis.ttl(k) < 0)
-                        .collect(Collectors.toSet());
-                if (!expiredKeys.isEmpty()) {
-                    jedis.del(expiredKeys.toArray(new String[0]));
-                }
+        Long keyCount = jedisMessage.getKeyCount();
 
-                Long keyCount = (long) jedis.keys("*").size();
-
-                System.out.println("Уникальных ключей получено: " + keyCount);
-                System.out.println("Пользователь с логином" + " " + name + " " + "онлайн");
-
-                return String.valueOf(keyCount);
-            }
-        }
+        System.out.println("Уникальных ключей получено: " + keyCount);
+        System.out.println("Пользователь с логином " + name + " онлайн");
+        return String.valueOf(keyCount);
     }
 }
 

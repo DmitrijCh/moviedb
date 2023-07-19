@@ -67,9 +67,10 @@ public class Controller {
     }
 
     @PostMapping("/message/movie")
-    public List<Movie> messageMovie(@RequestParam String key, @RequestParam int count, @RequestParam int offset, @RequestParam String type) {
+    public List<Movie> messageMovie(@RequestParam String key, @RequestParam int count, @RequestParam int offset,
+                                    @RequestParam String type, String genres) {
         User user = storage.getUser(key);
-        return storage.getMovie(user, count, offset, type);
+        return storage.getMovie(user, count, offset, type, genres);
     }
 
     @PostMapping("/search")
@@ -82,9 +83,9 @@ public class Controller {
         User user = storage.getUser(key);
 
         String topic = "Test";
-        String message = "Пользователь с логином " + user.getLogin() +
-                " добавил в избранное фильм с id: " + movieID;
+        String message = "Пользователь с логином  " + user.getLogin() + " добавил в избранное фильм с id: " + movieID;
         kafkaMessage.sendMessage(topic, message);
+
         return storage.getLikeMovie(user, movieID);
     }
 

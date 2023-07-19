@@ -199,6 +199,7 @@ function presenceKey() {
 let loadedMoviesCount = 0;
 let loadMoreButton = null;
 let typeMov = "";
+let typeGen = "";
 
 document.getElementById("movie-type-select").addEventListener("change", function () {
     typeMov = this.options[this.selectedIndex].value;
@@ -216,6 +217,22 @@ window.addEventListener("load", function () {
     void verificationMovie(key);
 });
 
+document.getElementById("movie-genres-select").addEventListener("change", function () {
+    typeGen = this.options[this.selectedIndex].value;
+    loadedMoviesCount = 0;
+    document.getElementById("movie").innerHTML = "";
+    void verificationMovie(key);
+});
+
+window.addEventListener("load", function () {
+    const selectElement = document.getElementById("movie-genres-select");
+    selectElement.selectedIndex = 0;
+    typeGen = selectElement.options[0].value;
+    loadedMoviesCount = 0;
+    document.getElementById("movie").innerHTML = "";
+    void verificationMovie(key);
+});
+
 async function verificationMovie(key) {
     if (!typeMov) {
         typeMov = "all";
@@ -226,6 +243,7 @@ async function verificationMovie(key) {
     paramKey.set("count", 16);
     paramKey.set("offset", loadedMoviesCount);
     paramKey.set("type", typeMov);
+    paramKey.set("genres", typeGen);
 
 
     const response = await fetch("http://localhost:9000/message/movie", {
@@ -277,6 +295,8 @@ function createMovieElement(movie, key) {
     const budget = document.createElement("p");
     const country = document.createElement("p");
     const type = document.createElement("p");
+    const persons = document.createElement("p");
+    const genres = document.createElement("p");
     const poster = document.createElement("img");
     const likeButton = document.createElement("button");
     const dislikeButton = document.createElement("button");
@@ -297,6 +317,8 @@ function createMovieElement(movie, key) {
     budget.textContent = movie.budget;
     country.textContent = movie.country;
     type.textContent = movie.type;
+    persons.textContent = movie.persons;
+    genres.textContent = movie.genre;
     poster.src = movie.poster;
     // rating.textContent = movie.rating
 
@@ -309,6 +331,7 @@ function createMovieElement(movie, key) {
     budget.style.display = "none"
     country.style.display = "none"
     type.style.display = "none"
+    persons.style.display = "none"
 
     buttonDiv.style.display = "inline-flex";
     buttonDiv.style.flexDirection = "column";
@@ -415,6 +438,16 @@ function createMovieElement(movie, key) {
 
         document.getElementById("movie-desc").textContent = movie.description;
 
+        const moviePersonsLabel = document.createElement("span");
+        moviePersonsLabel.textContent = "Актеры: ";
+        moviePersonsLabel.style.color = '#006400';
+        const moviePersonsValue = document.createElement("span");
+        moviePersonsValue.textContent = movie.persons;
+        moviePersonsValue.style.color = '#006400';
+        document.getElementById("movie-persons").innerHTML = "";
+        document.getElementById("movie-persons").appendChild(moviePersonsLabel);
+        document.getElementById("movie-persons").appendChild(moviePersonsValue);
+
         const movieSloganLabel = document.createElement("span");
         movieSloganLabel.textContent = "Слоган: ";
         movieSloganLabel.style.color = '#006400';
@@ -464,6 +497,16 @@ function createMovieElement(movie, key) {
         document.getElementById("movie-type").innerHTML = "";
         document.getElementById("movie-type").appendChild(movieTypeLabel);
         document.getElementById("movie-type").appendChild(movieTypeValue);
+
+        const movieGenreLabel = document.createElement("span");
+        movieGenreLabel.textContent = "Тип: ";
+        movieGenreLabel.style.color = "#006400";
+        const movieGenreValue = document.createElement("span");
+        movieGenreValue.textContent = movie.genres;
+        movieGenreValue.style.color = "#006400";
+        document.getElementById("movie-genres").innerHTML = "";
+        document.getElementById("movie-genres").appendChild(movieGenreLabel);
+        document.getElementById("movie-genres").appendChild(movieGenreValue);
 
         document.getElementById("movie-poster").src = movie.poster;
 
@@ -648,6 +691,8 @@ function createMovieElement(movie, key) {
     movieDiv.appendChild(budget);
     movieDiv.appendChild(country);
     movieDiv.appendChild(type);
+    movieDiv.appendChild(persons);
+    movieDiv.appendChild(genres);
     movieDiv.appendChild(poster);
     movieDiv.appendChild(buttonDiv);
     movieDiv.appendChild(buttonsDiv);

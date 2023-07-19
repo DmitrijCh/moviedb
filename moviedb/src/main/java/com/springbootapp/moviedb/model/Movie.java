@@ -49,11 +49,18 @@ public class Movie {
     @Column(name = "poster")
     private String poster;
 
+    @Column(name = "persons")
+    private String persons;
+
+    @Column(name = "genres")
+    private String genres;
+
     public Movie() {
     }
 
     public Movie(Integer id, String originalName, String name, String year, String time, String ageRestriction, String description,
-                 String slogan, String budget, String countryRu, String type, String createdAt, String updatedAt, String poster) {
+                 String slogan, String budget, String countryRu, String type, String createdAt, String updatedAt, String poster,
+                 String persons, String genres) {
         this.id = id;
         this.originalName = originalName;
         this.name = name;
@@ -68,6 +75,8 @@ public class Movie {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.poster = poster;
+        this.persons = persons;
+        this.genres = genres;
     }
 
     public Integer getId() {
@@ -180,6 +189,22 @@ public class Movie {
 
     public void setPoster(String poster) {
         this.poster = poster;
+    }
+
+    public String getPersons() {
+        return persons;
+    }
+
+    public void setPersons(String persons) {
+        this.persons = persons;
+    }
+
+    public String getGenres() {
+        return genres;
+    }
+
+    public void setGenres(String genres) {
+        this.genres = genres;
     }
 }
 

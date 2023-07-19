@@ -84,8 +84,8 @@ public class MyBatisStorage implements Storage {
     }
 
     @Override
-    public List<Movie> getMovie(User user, int count, int offset, String type) {
-        return movieInformMapper.getMoviesByUser(user.getLogin(), count, offset, type);
+    public List<Movie> getMovie(User user, int count, int offset, String type, String genres) {
+        return movieInformMapper.getMoviesByUser(user.getLogin(), count, offset, type, genres);
     }
 
     @Override

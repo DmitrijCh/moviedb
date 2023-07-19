@@ -75,8 +75,8 @@ public class JDBCStorage implements Storage {
     }
 
     @Override
-    public List<Movie> getMovie(User user, int count, int offset, String type) {
-        String query = "SELECT id, name, year, poster, time, description, slogan, age_restriction, budget, country_ru, type " +
+    public List<Movie> getMovie(User user, int count, int offset, String type, String genres) {
+        String query = "SELECT id, name, year, poster, time, description, slogan, age_restriction, budget, country_ru, type, persons, genres " +
                 "FROM movies " +
                 "WHERE EXISTS (SELECT 1 FROM session_keys WHERE user_login = ?) ";
 
@@ -86,6 +86,14 @@ public class JDBCStorage implements Storage {
         if (!"all".equals(type)) {
             query += "AND type = ? ";
             parameters.add(type);
+        }
+
+        if ("мультфильм".equals(genres) || "драма".equals(genres) || "мелодрама".equals(genres) || "фэнтези".equals(genres) || "комедия".equals(genres) ||
+                "фантастика".equals(genres) || "ужасы".equals(genres) || "мюзикл".equals(genres) || "семейный".equals(genres) || "приключения".equals(genres) ||
+                "короткометражка".equals(genres) || "триллер".equals(genres) || "криминал".equals(genres) || "боевик".equals(genres) || "биография".equals(genres) ||
+                "история".equals(genres) || "военный".equals(genres) || "спорт".equals(genres) || "музыка".equals(genres) || "вестерн".equals(genres) ||
+                "детектив".equals(genres) || "документальный".equals(genres) || "фильм-нуар".equals(genres) || "аниме".equals(genres)) {
+            query += "AND genres LIKE '%" + genres + "%' ";
         }
 
         query += "ORDER BY id LIMIT ? OFFSET ?";
@@ -105,6 +113,8 @@ public class JDBCStorage implements Storage {
             movie.setBudget(resultSet.getString("budget"));
             movie.setCountryRu(resultSet.getString("country_ru"));
             movie.setType(resultSet.getString("type"));
+            movie.setPersons(resultSet.getString("persons"));
+            movie.setGenres(resultSet.getString("genres"));
             return movie;
         });
     }

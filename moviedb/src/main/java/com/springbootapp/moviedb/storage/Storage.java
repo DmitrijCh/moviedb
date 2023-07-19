@@ -21,7 +21,7 @@ public interface Storage {
 
     String verificationKey(String login, String password);
 
-    List<Movie> getMovie(User user, int count, int offset, String type);
+    List<Movie> getMovie(User user, int count, int offset, String type, String genres);
 
     List<Movie> searchMovies(String name);
 

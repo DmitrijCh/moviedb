@@ -15,6 +15,7 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -111,7 +112,7 @@ public class HibernateStorage implements Storage {
     }
 
     @Override
-    public List<Movie> getMovie(User user, int count, int offset, String type) {
+    public List<Movie> getMovie(User user, int count, int offset, String type, String genres) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Movie> criteriaQuery = criteriaBuilder.createQuery(Movie.class);
         Root<Movie> root = criteriaQuery.from(Movie.class);
@@ -129,6 +130,18 @@ public class HibernateStorage implements Storage {
             predicates.add(criteriaBuilder.equal(root.get("type"), type));
         }
 
+        String[] genresList = {"аниме", "биография", "боевик", "вестерн", "военный", "детектив", "документальный", "драма", "история",
+                "комедия", "короткометражка", "криминал", "мелодрама", "мультфильм", "музыка", "мюзикл", "приключения", "семейный",
+                "спорт", "триллер", "ужасы", "фантастика", "фильм-нуар", "фэнтези"};
+
+        Arrays.sort(genresList);
+
+        if (Arrays.binarySearch(genresList, genres) >= 0) {
+            Expression<String> genresExpression = root.get("genres");
+            Predicate genresPredicate = criteriaBuilder.like(genresExpression, "%" + genres + "%");
+            predicates.add(genresPredicate);
+        }
+
         criteriaQuery.select(root)
                 .where(predicates.toArray(new Predicate[0]))
                 .orderBy(criteriaBuilder.asc(root.get("id")));
@@ -139,6 +152,7 @@ public class HibernateStorage implements Storage {
 
         return query.getResultList();
     }
+
 
     @Override
     public List<Movie> searchMovies(String name) {

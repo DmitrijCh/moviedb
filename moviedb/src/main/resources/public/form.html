@@ -8,13 +8,13 @@
 <body>
 <div id="authorization">
     <form action="http://localhost:9000/authorization" method="post" id="authorization-form"
-        <label>
-            <input type="text" required name="login" placeholder="Login"/>
-        </label>
-        <label>
-            <input type="password" required name="password" placeholder="Password"/>
-        </label>
-        <button id="login-button">Вход</button>
+    <label>
+        <input type="text" required name="login" placeholder="Login"/>
+    </label>
+    <label>
+        <input type="password" required name="password" placeholder="Password"/>
+    </label>
+    <button id="login-button">Вход</button>
     </form>
     <a id="auth-button" href="javascript:void(0)">Зарегистрироваться</a>
 </div>
@@ -52,9 +52,39 @@
 
 <div id="movie-types" style="display:none;">
     <select id="movie-type-select">
-        <option value="all">Все</option>
+        <option value="all">Все (Тип)</option>
         <option value="film">Только фильмы</option>
         <option value="serial">Только сериалы</option>
+    </select>
+</div>
+
+<div id="movie-genre">
+    <select id="movie-genres-select">
+        <option value="all">Все (Жанр)</option>
+        <option value="аниме">Аниме</option>
+        <option value="биография">Биография</option>
+        <option value="боевик">Боевик</option>
+        <option value="ветерн">Вестерн</option>
+        <option value="военный">Военный</option>
+        <option value="детектив">Детектив</option>
+        <option value="документальный">Документальный</option>
+        <option value="драма">Драма</option>
+        <option value="итория">История</option>
+        <option value="комедия">Комедия</option>
+        <option value="короткометражка">Короткометражка</option>
+        <option value="криминал">Криминал</option>
+        <option value="мелодрама">Мелодрама</option>
+        <option value="музыка">Музыка</option>
+        <option value="мултфильм">Мультфильм</option>
+        <option value="мюзикл">Мюзикл</option>
+        <option value="приключения">Приключения</option>
+        <option value="семейный">Семейный</option>
+        <option value="спорт">Спорт</option>
+        <option value="триллер">Триллер</option>
+        <option value="ужасы">Ужасы</option>
+        <option value="фантастика">Фантастика</option>
+        <option value="фильм-нуар">Фильм-нуар</option>
+        <option value="фэнтези">Фэнтези</option>
     </select>
 </div>
 
@@ -67,12 +97,14 @@
     <p id="movie-year"></p>
     <p id="movie-description"></p>
     <p id="movie-desc"></p>
+    <p id="movie-persons"></p>
     <p id="movie-time"></p>
     <p id="movie-slogan"></p>
     <p id="movie-age"></p>
     <p id="movie-budget"></p>
     <p id="movie-country"></p>
     <p id="movie-type"></p>
+    <p id="movie-genres"></p>
 </div>
 
 <div id="movie-rat">

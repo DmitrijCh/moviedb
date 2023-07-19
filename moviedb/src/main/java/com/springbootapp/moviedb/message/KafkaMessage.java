@@ -21,7 +21,8 @@ public class KafkaMessage {
     }
 
     public void sendMessage(String topic, String message) {
-        ProducerRecord<String, String> record = new ProducerRecord<>(topic, message);
+        long timestamp = System.currentTimeMillis();
+        ProducerRecord<String, String> record = new ProducerRecord<>(topic, null, timestamp, null, message);
         producer.send(record);
     }
 }

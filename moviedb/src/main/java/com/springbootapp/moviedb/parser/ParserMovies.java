@@ -60,7 +60,7 @@ public class ParserMovies {
                         movieTitle.get("country_ru"), movieTitle.get("type"), movieTitle.get("created_at"),
                         movieTitle.get("updated_at"), movieTitle.get("small_poster"), genres, persons);
             }
-            }
+        }
     }
 
     private String getGenres(JSONObject movieTitle) {
@@ -86,8 +86,6 @@ public class ParserMovies {
 
         return String.join(",", persons);
     }
-
-
 
     public URL createUrl(String link) throws MalformedURLException {
         return new URL(link);

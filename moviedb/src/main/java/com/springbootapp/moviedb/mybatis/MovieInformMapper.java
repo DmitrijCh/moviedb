@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 public interface MovieInformMapper {
-    @Select("SELECT id, name, year, poster, time, description, slogan, age_restriction, budget, country_ru, type, genres " +
+    @Select("SELECT id, name, year, poster, time, description, slogan, age_restriction, budget, country_ru, type, persons, genres " +
             "FROM movies " +
             "WHERE EXISTS (SELECT 1 FROM session_keys WHERE user_login = #{login}) " +
             "AND (#{type} = 'all' OR type = #{type}) " +

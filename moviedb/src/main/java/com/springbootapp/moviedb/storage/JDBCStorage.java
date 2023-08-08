@@ -16,7 +16,7 @@ import java.util.List;
 @Qualifier("jdbc")
 public class JDBCStorage implements Storage {
 
-    private  final TokenUsers tokenUsers;
+    private final TokenUsers tokenUsers;
     private final Timestamp timestamp;
     private final JdbcTemplate jdbcTemplate;
 

@@ -280,7 +280,7 @@ async function verificationMovie(key) {
     document.getElementById("movie").parentNode.appendChild(loadMoreDiv);
 }
 
-// Собираем все элементы фильма, добавляем понравившиеся фильмы в избранное, так же удаляем фильмы из избранного
+// Собираем все элементы фильма
 function createMovieElement(movie, key) {
     const movieDiv = document.createElement("div");
     const buttonsDiv = document.createElement("div");
@@ -673,6 +673,10 @@ function createMovieElement(movie, key) {
         .catch(error => {
             console.error("Ошибка при получении статуса фильма:", error);
         });
+
+    // Ставим заглушку для постера
+    const placeholderImage = "img/nebo.jpg";
+    poster.src = movie.poster ? movie.poster : placeholderImage;
 
     buttonDiv.appendChild(poster);
     buttonDiv.appendChild(likeButton);

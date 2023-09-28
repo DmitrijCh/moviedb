@@ -32,6 +32,3 @@ public interface MovieMapper {
             "WHERE like_movies.user_login = #{login}")
     List<Movie> getLikeAndDislikeMovies(@Param("login") String login);
 }
-
-
-

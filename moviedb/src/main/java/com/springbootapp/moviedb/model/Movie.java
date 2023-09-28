@@ -1,8 +1,14 @@
 package com.springbootapp.moviedb.model;
 
-import javax.persistence.*;
+import lombok.Getter;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Getter
 @Table(name = "movies")
 public class Movie {
 
@@ -79,132 +85,67 @@ public class Movie {
         this.genres = genres;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getOriginalName() {
-        return originalName;
     }
 
     public void setOriginalName(String originalName) {
         this.originalName = originalName;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getYear() {
-        return year;
     }
 
     public void setYear(String year) {
         this.year = year;
     }
 
-    public String getTime() {
-        return time;
-    }
-
     public void setTime(String time) {
         this.time = time;
-    }
-
-    public String getAgeRestriction() {
-        return ageRestriction;
     }
 
     public void setAgeRestriction(String ageRestriction) {
         this.ageRestriction = ageRestriction;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getSlogan() {
-        return slogan;
     }
 
     public void setSlogan(String slogan) {
         this.slogan = slogan;
     }
 
-    public String getBudget() {
-        return budget;
-    }
-
     public void setBudget(String budget) {
         this.budget = budget;
-    }
-
-    public String getCountryRu() {
-        return countryRu;
     }
 
     public void setCountryRu(String countryRu) {
         this.countryRu = countryRu;
     }
 
-    public String getType() {
-        return type;
-    }
-
     public void setType(String type) {
         this.type = type;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
     }
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
-    public String getUpdatedAt() {
-        return updatedAt;
-    }
-
     public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public String getPoster() {
-        return poster;
     }
 
     public void setPoster(String poster) {
         this.poster = poster;
     }
 
-    public String getPersons() {
-        return persons;
-    }
-
     public void setPersons(String persons) {
         this.persons = persons;
-    }
-
-    public String getGenres() {
-        return genres;
     }
 
     public void setGenres(String genres) {
         this.genres = genres;
     }
 }
-

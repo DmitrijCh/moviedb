@@ -1,8 +1,8 @@
 package com.springbootapp.moviedb.mybatis;
 
 import com.springbootapp.moviedb.model.CommentMovies;
-import org.apache.ibatis.annotations.*;
 import com.springbootapp.moviedb.model.User;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -22,5 +22,3 @@ public interface CommentMoviesMapper {
             "WHERE cm.movie_id = #{movieId}")
     List<CommentMovies> getAllComments(@Param("movieId") int movieId);
 }
-
-

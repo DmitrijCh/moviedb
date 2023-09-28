@@ -1,7 +1,6 @@
 package com.springbootapp.moviedb.mybatis;
 
 import com.springbootapp.moviedb.model.Movie;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -43,5 +42,3 @@ public interface MovieInformMapper {
     )
     List<Movie> getMoviesByUser(@Param("login") String login, @Param("count") int count, @Param("offset") int offset, @Param("type") String type, @Param("genres") String genres);
 }
-
-

@@ -1,7 +1,10 @@
 package com.springbootapp.moviedb.mybatis;
 
 import com.springbootapp.moviedb.model.User;
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 @Mapper
 public interface UserMapper {
@@ -21,7 +24,3 @@ public interface UserMapper {
     @Select("SELECT login FROM users WHERE login = #{login}")
     String searchLoginByUser(String login);
 }
-
-
-
-

@@ -1,8 +1,14 @@
 package com.springbootapp.moviedb.model;
 
-import javax.persistence.*;
+import lombok.Getter;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Getter
 @Table(name = "comment_movies")
 public class CommentMovies {
 
@@ -25,24 +31,12 @@ public class CommentMovies {
         this.comment = comment;
     }
 
-    public String getUserLogin() {
-        return userLogin;
-    }
-
     public void setUserLogin(String userLogin) {
         this.userLogin = userLogin;
     }
 
-    public Integer getMovieId() {
-        return movieId;
-    }
-
     public void setMovieId(Integer movieId) {
         this.movieId = movieId;
-    }
-
-    public String getComment() {
-        return comment;
     }
 
     public void setComment(String comment) {

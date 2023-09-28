@@ -1,9 +1,12 @@
 package com.springbootapp.moviedb.model;
 
+import lombok.Getter;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
+@Getter
 @Table(name = "like_movies")
 public class LikeMovies implements Serializable {
     @Id
@@ -31,24 +34,12 @@ public class LikeMovies implements Serializable {
         this.movieId = movieId;
     }
 
-    public String getUserLogin() {
-        return userLogin;
-    }
-
     public void setUserLogin(String userLogin) {
         this.userLogin = userLogin;
     }
 
-    public Integer getMovieId() {
-        return movieId;
-    }
-
     public void setMovieId(Integer movieId) {
         this.movieId = movieId;
-    }
-
-    public User getUser() {
-        return user;
     }
 
     public void setUser(User user) {
@@ -56,17 +47,8 @@ public class LikeMovies implements Serializable {
         this.userLogin = user.getLogin();
     }
 
-    public Movie getMovie() {
-        return movie;
-    }
-
     public void setMovie(Movie movie) {
         this.movie = movie;
         this.movieId = movie.getId();
     }
 }
-
-
-
-
-

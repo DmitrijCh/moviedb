@@ -15,8 +15,8 @@ import java.util.concurrent.atomic.AtomicLong;
 public class KafkaService {
 
     private final JdbcTemplate jdbcTemplate;
-    private AtomicLong messageCount = new AtomicLong(0);
-    private LocalDateTime currentDateTime = LocalDateTime.now();
+    private final AtomicLong messageCount = new AtomicLong(0);
+    private final LocalDateTime currentDateTime = LocalDateTime.now();
 
     public KafkaService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -49,4 +49,3 @@ public class KafkaService {
         }
     }
 }
-

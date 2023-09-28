@@ -10,8 +10,8 @@ import javax.sql.DataSource;
 @Component
 public class ConnectionManager {
 
-    private final JdbcTemplate jdbcTemplate;
-    private final SqlSessionFactory sqlSessionFactory;
+    protected final JdbcTemplate jdbcTemplate;
+    protected final SqlSessionFactory sqlSessionFactory;
 
     @Autowired
     public ConnectionManager(DataSource dataSource, SqlSessionFactory sqlSessionFactory) {
@@ -19,5 +19,3 @@ public class ConnectionManager {
         this.sqlSessionFactory = sqlSessionFactory;
     }
 }
-
-

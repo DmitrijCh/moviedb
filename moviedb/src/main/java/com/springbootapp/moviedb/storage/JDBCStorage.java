@@ -26,6 +26,14 @@ public class JDBCStorage implements Storage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    private String convertKeyToJson(Key keys) {
+        try {
+            return new ObjectMapper().writeValueAsString(keys);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void addUsers(String name, String login, String password) {
         String query = "INSERT INTO users (name, login, password) VALUES (?, ?, ?)";
@@ -45,11 +53,7 @@ public class JDBCStorage implements Storage {
         addSessionKeys(key, login, stamp);
         Key keys = new Key();
         keys.setKey(key);
-        try {
-            return new ObjectMapper().writeValueAsString(keys);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        return convertKeyToJson(keys);
     }
 
     @Override
@@ -88,12 +92,9 @@ public class JDBCStorage implements Storage {
             parameters.add(type);
         }
 
-        if ("мультфильм".equals(genres) || "драма".equals(genres) || "мелодрама".equals(genres) || "фэнтези".equals(genres) || "комедия".equals(genres) ||
-                "фантастика".equals(genres) || "ужасы".equals(genres) || "мюзикл".equals(genres) || "семейный".equals(genres) || "приключения".equals(genres) ||
-                "короткометражка".equals(genres) || "триллер".equals(genres) || "криминал".equals(genres) || "боевик".equals(genres) || "биография".equals(genres) ||
-                "история".equals(genres) || "военный".equals(genres) || "спорт".equals(genres) || "музыка".equals(genres) || "вестерн".equals(genres) ||
-                "детектив".equals(genres) || "документальный".equals(genres) || "фильм-нуар".equals(genres) || "аниме".equals(genres)) {
-            query += "AND genres LIKE '%" + genres + "%' ";
+        if (!"all".equals(genres)) {
+            query += "AND genres LIKE ? ";
+            parameters.add("%" + genres + "%");
         }
 
         query += "ORDER BY id LIMIT ? OFFSET ?";
@@ -192,17 +193,20 @@ public class JDBCStorage implements Storage {
 
     @Override
     public int addRating(User user, int movieId, String rating) {
-        String query = "SELECT COUNT(*) FROM rating_movies WHERE movie_id = ? AND user_login = ?";
-        int count = jdbcTemplate.queryForObject(query, Integer.class, movieId, user.getLogin());
 
-        if (count > 0) {
+        String query = "SELECT COUNT(*) FROM rating_movies WHERE movie_id = ? AND user_login = ?";
+        Integer count = jdbcTemplate.queryForObject(query, Integer.class, movieId, user.getLogin());
+
+        int countValue = (count != null) ? count : 0;
+
+        if (countValue > 0) {
             String updateQuery = "UPDATE rating_movies SET rating = ? WHERE movie_id = ? AND user_login = ?";
             jdbcTemplate.update(updateQuery, rating, movieId, user.getLogin());
         } else {
             String insertQuery = "INSERT INTO rating_movies (movie_id, user_login, rating) VALUES (?, ?, ?)";
             jdbcTemplate.update(insertQuery, movieId, user.getLogin(), rating);
         }
-        return count;
+        return countValue;
     }
 
     @Override
@@ -247,19 +251,19 @@ public class JDBCStorage implements Storage {
 
     @Override
     public List<CommentMovies> getOverallComments(int movieId) {
-        String query = "SELECT u.name, cm.movie_id, cm.comment FROM comment_movies cm JOIN users u ON cm.user_login = u.login WHERE cm.movie_id = ? ORDER BY cm.movie_id ASC";
-        return jdbcTemplate.query(query, new Object[]{movieId}, (rs, rowNum) -> {
-            String userName = rs.getString(1);
-            Integer commentMovieId = rs.getInt(2);
-            String comment = rs.getString(3);
-
+        String query = "SELECT u.name, cm.movie_id, cm.comment FROM comment_movies cm JOIN users u ON cm.user_login = u.login " +
+                "WHERE cm.movie_id = ? ORDER BY cm.movie_id ASC";
+        return jdbcTemplate.query(query, (rs, rowNum) -> {
+            String userName = rs.getString("name");
+            Integer commentMovieId = rs.getInt("movie_id");
+            String comment = rs.getString("comment");
             return new CommentMovies(userName, commentMovieId, comment);
-        });
+        }, movieId);
     }
 
     @Override
     public String searchLogin(User user) {
         String query = "SELECT login FROM users WHERE login = ?";
-        return jdbcTemplate.queryForObject(query, new Object[]{user.getLogin()}, String.class);
+        return jdbcTemplate.queryForObject(query, String.class, user.getLogin());
     }
 }

@@ -6,7 +6,8 @@ import com.springbootapp.moviedb.connection.HibernateConfig;
 import com.springbootapp.moviedb.model.*;
 import com.springbootapp.moviedb.token.Timestamp;
 import com.springbootapp.moviedb.token.TokenUsers;
-import org.hibernate.*;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -23,18 +24,16 @@ import java.util.List;
 @Qualifier("hibernate")
 public class HibernateStorage implements Storage {
 
-    private final HibernateConfig hibernateConfig;
     private final TokenUsers tokenUsers;
     private final Timestamp timestamp;
 
-    public HibernateStorage(HibernateConfig hibernateConfig, TokenUsers tokenUsers, Timestamp timestamp) {
-        this.hibernateConfig = hibernateConfig;
+    public HibernateStorage(TokenUsers tokenUsers, Timestamp timestamp) {
         this.tokenUsers = tokenUsers;
         this.timestamp = timestamp;
     }
 
     public SessionFactory getSessionFactory() {
-        return hibernateConfig.getSessionFactory();
+        return HibernateConfig.getSessionFactory();
     }
 
     public EntityManager getEntityManager() {
@@ -152,7 +151,6 @@ public class HibernateStorage implements Storage {
 
         return query.getResultList();
     }
-
 
     @Override
     public List<Movie> searchMovies(String name) {
@@ -410,11 +408,3 @@ public class HibernateStorage implements Storage {
         return (String) query.getSingleResult();
     }
 }
-
-
-
-
-
-
-
-

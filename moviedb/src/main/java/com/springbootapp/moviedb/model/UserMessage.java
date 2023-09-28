@@ -1,5 +1,8 @@
 package com.springbootapp.moviedb.model;
 
+import lombok.Getter;
+
+@Getter
 public class UserMessage {
     private String message;
 
@@ -8,9 +11,5 @@ public class UserMessage {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public String getMessage() {
-        return this.message;
     }
 }

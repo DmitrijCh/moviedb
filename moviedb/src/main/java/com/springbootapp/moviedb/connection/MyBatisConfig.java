@@ -20,4 +20,3 @@ public class MyBatisConfig {
         return sessionFactory.getObject();
     }
 }
-

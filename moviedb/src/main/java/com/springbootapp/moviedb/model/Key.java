@@ -1,8 +1,11 @@
 package com.springbootapp.moviedb.model;
 
+import lombok.Getter;
+
 import javax.persistence.*;
 
 @Entity
+@Getter
 @Table(name = "session_keys")
 public class Key {
 
@@ -26,24 +29,12 @@ public class Key {
         this.timestamp = timestamp;
     }
 
-    public String getKey() {
-        return key;
-    }
-
     public void setKey(String key) {
         this.key = key;
     }
 
-    public User getUser() {
-        return user;
-    }
-
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public String getTimestamp() {
-        return timestamp;
     }
 
     public void setTimestamp(String timestamp) {
@@ -55,12 +46,3 @@ public class Key {
         this.user.setLogin(login);
     }
 }
-
-
-
-
-
-
-
-
-

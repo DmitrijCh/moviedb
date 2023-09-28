@@ -38,9 +38,8 @@ public class ParserMovies {
         JSONObject movieJsonObject = (JSONObject) JSONValue.parseWithException(resultJson);
         JSONArray movieArray = (JSONArray) movieJsonObject.get("data");
 
-        int size = movieArray.size();
-        for (int n = 0; n < size; n++) {
-            JSONObject movieTitle = (JSONObject) movieArray.get(n);
+        for (Object o : movieArray) {
+            JSONObject movieTitle = (JSONObject) o;
             int id = ((Number) movieTitle.get("id")).intValue();
 
             String queryCheck = "SELECT COUNT(*) FROM movies WHERE id = ?";
@@ -91,7 +90,3 @@ public class ParserMovies {
         return new URL(link);
     }
 }
-
-
-
-

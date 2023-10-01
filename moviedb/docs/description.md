@@ -36,7 +36,7 @@
 
 ## Стек технологий:
 
-- Фронтенд: React, HTML, CSS, JavaScript
+- Фронтенд: HTML, CSS, JavaScript
 - Бэкенд: Node.js, Express.js
 - База данных: PostgreSQL
 - Аутентификация: JSON Web Tokens (JWT)

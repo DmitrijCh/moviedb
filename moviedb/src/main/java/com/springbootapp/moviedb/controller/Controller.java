@@ -8,6 +8,8 @@ import com.springbootapp.moviedb.model.*;
 import com.springbootapp.moviedb.storage.Storage;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +33,18 @@ public class Controller {
     }
 
     @RequestMapping("/authorization")
-    @ApiOperation("Форма авторизации")
+    @ApiOperation(value =
+            "Форма авторизации",
+            notes = "Отображает форму авторизации для пользователей."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Успешный запрос. Форма авторизации отображена."),
+            @ApiResponse(code = 201, message = "Создано."),
+            @ApiResponse(code = 204, message = "Успешно, но нет содержимого."),
+            @ApiResponse(code = 401, message = "Ошибка авторизации. Введенная схема транзакции недопустима. Пожалуйста, проверьте правильность отправленных данных."),
+            @ApiResponse(code = 403, message = "Доступ запрещен. Пожалуйста, проверьте правильность запроса."),
+            @ApiResponse(code = 404, message = "Ресурс не найден. Произошла неожиданная ошибка. Ошибка была зарегистрирована и находится в процессе расследования. Пожалуйста, обратитесь к администратору системы.")
+    })
     ModelAndView authorization() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("form.html");
@@ -39,14 +52,34 @@ public class Controller {
     }
 
     @PostMapping("/register")
-    @ApiOperation("Регистрация нового пользователя")
+    @ApiOperation(value =
+            "Регистрация нового пользователя",
+            notes = "Регистрирует нового пользователя с указанным именем, логином и паролем."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Успешно. Пользователь зарегистрирован."),
+            @ApiResponse(code = 201, message = "Создано. Пользователь успешно создан."),
+            @ApiResponse(code = 401, message = "Ошибка авторизации. Введенные учетные данные недопустимы."),
+            @ApiResponse(code = 403, message = "Доступ запрещен. Пожалуйста, проверьте правильность запроса."),
+            @ApiResponse(code = 404, message = "Ресурс не найден. Произошла неожиданная ошибка. Обратитесь к администратору системы.")
+    })
     public String registerUser(@RequestParam String name, @RequestParam String login, @RequestParam String password) throws JsonProcessingException {
         storage.addUsers(name, login, password);
         return storage.registration(login);
     }
 
     @PostMapping("/logins")
-    @ApiOperation("Вход пользователя")
+    @ApiOperation(value =
+            "Вход пользователя",
+            notes = "Выполняет вход пользователя с указанным логином и паролем."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Успешно. Пользователь вошел в систему."),
+            @ApiResponse(code = 201, message = "Создано. Пользователь успешно создан."),
+            @ApiResponse(code = 401, message = "Ошибка авторизации. Введенные учетные данные недопустимы."),
+            @ApiResponse(code = 403, message = "Доступ запрещен. Пожалуйста, проверьте правильность запроса."),
+            @ApiResponse(code = 404, message = "Ресурс не найден. Произошла неожиданная ошибка. Обратитесь к администратору системы.")
+    })
     public String loginUser(@RequestParam String login, @RequestParam String password) throws JsonProcessingException {
         String key = storage.verificationKey(login, password);
         if (key != null) {
@@ -59,7 +92,17 @@ public class Controller {
     }
 
     @PostMapping("/message/user")
-    @ApiOperation("Отправить сообщение пользователю")
+    @ApiOperation(value =
+            "Отправить сообщение пользователю",
+            notes = "Отправляет сообщение пользователю с использованием ключа доступа."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Успешно. Сообщение отправлено."),
+            @ApiResponse(code = 201, message = "Создано. Сообщение успешно создано."),
+            @ApiResponse(code = 401, message = "Ошибка авторизации. Пожалуйста, удостоверьтесь в правильности вашего ключа доступа."),
+            @ApiResponse(code = 403, message = "Доступ запрещен. Пожалуйста, проверьте правильность запроса."),
+            @ApiResponse(code = 404, message = "Ресурс не найден. Произошла неожиданная ошибка. Обратитесь к администратору системы.")
+    })
     public String messageUser(@RequestParam String key) throws JsonProcessingException {
         User user = storage.getUser(key);
         String name = storage.searchKey(user);
@@ -73,7 +116,17 @@ public class Controller {
     }
 
     @PostMapping("/message/movie")
-    @ApiOperation("Получить список фильмов")
+    @ApiOperation(value =
+            "Получить список фильмов",
+            notes = "Получает список фильмов с учетом параметров запроса."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Успешно. Список фильмов получен."),
+            @ApiResponse(code = 201, message = "Создано. Список фильмов успешно создан."),
+            @ApiResponse(code = 401, message = "Ошибка авторизации. Пожалуйста, удостоверьтесь в правильности вашего ключа доступа."),
+            @ApiResponse(code = 403, message = "Доступ запрещен. Пожалуйста, проверьте правильность запроса."),
+            @ApiResponse(code = 404, message = "Ресурс не найден. Произошла неожиданная ошибка. Обратитесь к администратору системы.")
+    })
     public List<Movie> messageMovie(@RequestParam String key, @RequestParam int count, @RequestParam int offset,
                                     @RequestParam String type, String genres) {
         User user = storage.getUser(key);
@@ -81,13 +134,33 @@ public class Controller {
     }
 
     @PostMapping("/search")
-    @ApiOperation("Поиск фильмов")
+    @ApiOperation(value =
+            "Поиск фильмов",
+            notes = "Выполняет поиск фильмов по названию."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Успешно. Фильмы найдены."),
+            @ApiResponse(code = 201, message = "Создано. Фильмы успешно созданы."),
+            @ApiResponse(code = 401, message = "Ошибка авторизации. Пожалуйста, удостоверьтесь в правильности вашего ключа доступа."),
+            @ApiResponse(code = 403, message = "Доступ запрещен. Пожалуйста, проверьте правильность запроса."),
+            @ApiResponse(code = 404, message = "Ресурс не найден. Произошла неожиданная ошибка. Обратитесь к администратору системы.")
+    })
     public List<Movie> searchMovies(@RequestParam String name) {
         return storage.searchMovies(name);
     }
 
     @PostMapping("/message/movie/like")
-    @ApiOperation("Добавить фильм в избранное")
+    @ApiOperation(value =
+            "Добавить фильм в избранное",
+            notes = "Добавляет фильм в список избранных и отправляет сообщение."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Успешно. Фильм добавлен в избранное и сообщение отправлено."),
+            @ApiResponse(code = 201, message = "Создано. Фильм успешно создан и сообщение отправлено."),
+            @ApiResponse(code = 401, message = "Ошибка авторизации. Пожалуйста, удостоверьтесь в правильности вашего ключа доступа."),
+            @ApiResponse(code = 403, message = "Доступ запрещен. Пожалуйста, проверьте правильность запроса."),
+            @ApiResponse(code = 404, message = "Ресурс не найден. Произошла неожиданная ошибка. Обратитесь к администратору системы.")
+    })
     public List<Movie> likeMovies(@RequestParam String key, @RequestParam int movieID) {
         User user = storage.getUser(key);
 
@@ -99,48 +172,117 @@ public class Controller {
     }
 
     @PostMapping("/message/movie/dislike")
-    @ApiOperation("Удалить фильм из избранного")
+    @ApiOperation(value =
+            "Удалить фильм из избранного",
+            notes = "Удаляет фильм из списка избранных."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Успешно. Фильм удален из избранного."),
+            @ApiResponse(code = 201, message = "Создано. Фильм успешно удален из избранного."),
+            @ApiResponse(code = 401, message = "Ошибка авторизации. Пожалуйста, удостоверьтесь в правильности вашего ключа доступа."),
+            @ApiResponse(code = 403, message = "Доступ запрещен. Пожалуйста, проверьте правильность запроса."),
+            @ApiResponse(code = 404, message = "Ресурс не найден. Произошла неожиданная ошибка. Обратитесь к администратору системы.")
+    })
     public List<Movie> dislikeMovies(@RequestParam String key, @RequestParam int movieID) {
         User user = storage.getUser(key);
         return storage.deleteLikeMovie(user, movieID);
     }
 
     @PostMapping("/message/movie/favorites")
-    @ApiOperation("Получить список избранных фильмов")
+    @ApiOperation(value =
+            "Получить список избранных фильмов",
+            notes = "Получает список фильмов, добавленных в избранное."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Успешно. Список избранных фильмов получен."),
+            @ApiResponse(code = 201, message = "Создано. Список избранных фильмов успешно создан."),
+            @ApiResponse(code = 401, message = "Ошибка авторизации. Пожалуйста, удостоверьтесь в правильности вашего ключа доступа."),
+            @ApiResponse(code = 403, message = "Доступ запрещен. Пожалуйста, проверьте правильность запроса."),
+            @ApiResponse(code = 404, message = "Ресурс не найден. Произошла неожиданная ошибка. Обратитесь к администратору системы.")
+    })
     public List<Movie> favoriteMovies(@RequestParam String key) {
         User user = storage.getUser(key);
         return storage.getFavoriteMovies(user);
     }
 
     @PostMapping("/message/movie/inform")
-    @ApiOperation("Получить список фильмов, добавленных и удаленных из избранного")
+    @ApiOperation(value =
+            "Получить список фильмов, добавленных и удаленных из избранного",
+            notes = "Получает список фильмов, которые были добавлены и удалены из избранного."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Успешно. Список фильмов получен."),
+            @ApiResponse(code = 201, message = "Создано. Список фильмов успешно создан."),
+            @ApiResponse(code = 401, message = "Ошибка авторизации. Пожалуйста, удостоверьтесь в правильности вашего ключа доступа."),
+            @ApiResponse(code = 403, message = "Доступ запрещен. Пожалуйста, проверьте правильность запроса."),
+            @ApiResponse(code = 404, message = "Ресурс не найден. Произошла неожиданная ошибка. Обратитесь к администратору системы.")
+    })
     public List<Movie> likeAndDislikeMovies(@RequestParam String key) {
         User user = storage.getUser(key);
         return storage.getLikeAndDislikeMovie(user);
     }
 
     @PostMapping("/message/movie/rating")
-    @ApiOperation("Установить рейтинг фильму")
+    @ApiOperation(value =
+            "Установить рейтинг фильму",
+            notes = "Устанавливает рейтинг фильму на основе предоставленного ключа, идентификатора фильма и рейтинга."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Успешно. Рейтинг фильма установлен."),
+            @ApiResponse(code = 201, message = "Создано. Рейтинг фильма успешно создан."),
+            @ApiResponse(code = 401, message = "Ошибка авторизации. Пожалуйста, удостоверьтесь в правильности вашего ключа доступа."),
+            @ApiResponse(code = 403, message = "Доступ запрещен. Пожалуйста, проверьте правильность запроса."),
+            @ApiResponse(code = 404, message = "Ресурс не найден. Произошла неожиданная ошибка. Обратитесь к администратору системы.")
+    })
     public int rating(@RequestParam String key, @RequestParam int movieID, @RequestParam String rating) {
         User user = storage.getUser(key);
         return storage.addRating(user, movieID, rating);
     }
 
     @PostMapping("/message/movie/user_rating")
-    @ApiOperation("Получить рейтинг пользователя")
+    @ApiOperation(value =
+            "Получить рейтинг пользователя",
+            notes = "Получает рейтинг пользователя на основе предоставленного ключа."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Успешно. Рейтинг пользователя получен."),
+            @ApiResponse(code = 201, message = "Создано. Рейтинг пользователя успешно создан."),
+            @ApiResponse(code = 401, message = "Ошибка авторизации. Пожалуйста, удостоверьтесь в правильности вашего ключа доступа."),
+            @ApiResponse(code = 403, message = "Доступ запрещен. Пожалуйста, проверьте правильность запроса."),
+            @ApiResponse(code = 404, message = "Ресурс не найден. Произошла неожиданная ошибка. Обратитесь к администратору системы.")
+    })
     public List<MovieRating> userRating(@RequestParam String key) {
         User user = storage.getUser(key);
         return storage.getUserRating(user);
     }
 
     @GetMapping("/message/movie/all_rating")
-    @ApiOperation("Получить общий рейтинг всех фильмов")
+    @ApiOperation(value =
+            "Получить общий рейтинг всех фильмов",
+            notes = "Получает общий рейтинг всех фильмов на основе имеющейся информации."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Успешно. Общий рейтинг всех фильмов получен."),
+            @ApiResponse(code = 401, message = "Ошибка авторизации. Пожалуйста, удостоверьтесь в правильности вашего ключа доступа."),
+            @ApiResponse(code = 403, message = "Доступ запрещен. Пожалуйста, проверьте правильность запроса."),
+            @ApiResponse(code = 404, message = "Ресурс не найден. Произошла неожиданная ошибка. Обратитесь к администратору системы.")
+    })
     public List<MovieRating> overallRating() {
         return storage.getOverallRating();
     }
 
     @PostMapping("/message/movie/comment")
-    @ApiOperation("Добавить комментарий к фильму")
+    @ApiOperation(value =
+            "Добавить комментарий к фильму",
+            notes = "Добавляет комментарий к фильму на основе предоставленного ключа, идентификатора фильма и комментария."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Успешно. Комментарий к фильму добавлен."),
+            @ApiResponse(code = 201, message = "Создано. Комментарий к фильму успешно создан."),
+            @ApiResponse(code = 401, message = "Ошибка авторизации. Пожалуйста, удостоверьтесь в правильности вашего ключа доступа."),
+            @ApiResponse(code = 403, message = "Доступ запрещен. Пожалуйста, проверьте правильность запроса."),
+            @ApiResponse(code = 404, message = "Ресурс не найден. Произошла неожиданная ошибка. Обратитесь к администратору системы.")
+    })
     public String commentMovies(@RequestParam String key, @RequestParam int movieID, @RequestParam String comment) {
         User user = storage.getUser(key);
         storage.addCommentMovie(user, movieID, comment);
@@ -148,13 +290,33 @@ public class Controller {
     }
 
     @PostMapping("/message/movie/all_comments")
-    @ApiOperation("Получить все комментарии к фильму")
+    @ApiOperation(value =
+            "Получить все комментарии к фильму",
+            notes = "Получает все комментарии к фильму на основе идентификатора фильма."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Успешно. Все комментарии к фильму получены."),
+            @ApiResponse(code = 201, message = "Создано."),
+            @ApiResponse(code = 401, message = "Ошибка авторизации. Пожалуйста, удостоверьтесь в правильности вашего ключа доступа."),
+            @ApiResponse(code = 403, message = "Доступ запрещен. Пожалуйста, проверьте правильность запроса."),
+            @ApiResponse(code = 404, message = "Ресурс не найден. Произошла неожиданная ошибка. Обратитесь к администратору системы.")
+    })
     public List<CommentMovies> overallComments(@RequestParam int movieID) {
         return storage.getOverallComments(movieID);
     }
 
     @PostMapping("/ping")
-    @ApiOperation("Проверить активность пользователя")
+    @ApiOperation(value =
+            "Проверить активность пользователя",
+            notes = "Проверяет активность пользователя на основе предоставленного ключа доступа."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Успешно. Активность пользователя проверена."),
+            @ApiResponse(code = 201, message = "Создано."),
+            @ApiResponse(code = 401, message = "Ошибка авторизации. Пожалуйста, удостоверьтесь в правильности вашего ключа доступа."),
+            @ApiResponse(code = 403, message = "Доступ запрещен. Пожалуйста, проверьте правильность запроса."),
+            @ApiResponse(code = 404, message = "Ресурс не найден. Произошла неожиданная ошибка. Обратитесь к администратору системы.")
+    })
     public String ping(@RequestParam String key) {
         User user = storage.getUser(key);
         String name = storage.searchLogin(user);

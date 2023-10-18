@@ -112,7 +112,7 @@ public class JDBCStorage implements Storage {
             movie.setSlogan(resultSet.getString("slogan"));
             movie.setAgeRestriction(resultSet.getString("age_restriction"));
             movie.setBudget(resultSet.getString("budget"));
-            movie.setCountryRu(resultSet.getString("country_ru"));
+            movie.setCountry(resultSet.getString("country_ru"));
             movie.setType(resultSet.getString("type"));
             movie.setPersons(resultSet.getString("persons"));
             movie.setGenres(resultSet.getString("genres"));

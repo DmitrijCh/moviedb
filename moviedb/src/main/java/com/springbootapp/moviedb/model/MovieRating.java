@@ -1,5 +1,6 @@
 package com.springbootapp.moviedb.model;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 
 import javax.persistence.*;
@@ -12,12 +13,15 @@ public class MovieRating {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "movie_id")
+    @ApiModelProperty(value = "Уникальный идентификатор фильма")
     private Integer id;
 
     @Column(name = "user_login")
+    @ApiModelProperty(value = "Логин пользователя, оставившего рейтинг")
     private String name;
 
     @Column(name = "rating")
+    @ApiModelProperty(value = "Рейтинг фильма, представленный пользователем")
     private String rating;
 
     public MovieRating() {

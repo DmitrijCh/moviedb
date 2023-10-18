@@ -1,5 +1,6 @@
 package com.springbootapp.moviedb.model;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 
 import javax.persistence.Column;
@@ -14,12 +15,15 @@ public class CommentMovies {
 
     @Id
     @Column(name = "user_login")
+    @ApiModelProperty(value = "Логин пользователя, оставившего комментарий")
     private String userLogin;
 
     @Column(name = "movie_id")
+    @ApiModelProperty(value = "Идентификатор фильма")
     private Integer movieId;
 
     @Column(name = "comment")
+    @ApiModelProperty(value = "Текст комментария к фильму")
     private String comment;
 
     public CommentMovies() {

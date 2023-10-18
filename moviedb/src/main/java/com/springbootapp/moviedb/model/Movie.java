@@ -1,5 +1,6 @@
 package com.springbootapp.moviedb.model;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 
 import javax.persistence.Column;
@@ -14,58 +15,74 @@ public class Movie {
 
     @Id
     @Column(name = "id")
+    @ApiModelProperty(value = "Уникальный идентификатор фильма")
     private Integer id;
 
     @Column(name = "name_original")
+    @ApiModelProperty(value = "Оригинальное название фильма")
     private String originalName;
 
     @Column(name = "name")
+    @ApiModelProperty(value = "Название фильма")
     private String name;
 
     @Column(name = "year")
+    @ApiModelProperty(value = "Год выпуска фильма")
     private String year;
 
     @Column(name = "time")
+    @ApiModelProperty(value = "Длительность фильма")
     private String time;
 
     @Column(name = "age_restriction")
+    @ApiModelProperty(value = "Возрастное ограничение фильма")
     private String ageRestriction;
 
     @Column(name = "description")
+    @ApiModelProperty(value = "Описание фильма")
     private String description;
 
     @Column(name = "slogan")
+    @ApiModelProperty(value = "Слоган фильма")
     private String slogan;
 
     @Column(name = "budget")
+    @ApiModelProperty(value = "Бюджет фильма")
     private String budget;
 
     @Column(name = "country_ru")
-    private String countryRu;
+    @ApiModelProperty(value = "Страна производства фильма")
+    private String country;
 
     @Column(name = "type")
+    @ApiModelProperty(value = "Тип фильма")
     private String type;
 
     @Column(name = "created_at")
+    @ApiModelProperty(value = "Дата создания записи о фильме")
     private String createdAt;
 
     @Column(name = "updated_at")
+    @ApiModelProperty(value = "Дата обновления записи о фильме")
     private String updatedAt;
 
     @Column(name = "poster")
+    @ApiModelProperty(value = "Ссылка на постер фильма")
     private String poster;
 
     @Column(name = "persons")
+    @ApiModelProperty(value = "Список актеров и персонала, связанных с фильмом")
     private String persons;
 
     @Column(name = "genres")
+    @ApiModelProperty(value = "Список жанров фильма")
     private String genres;
 
     public Movie() {
     }
 
     public Movie(Integer id, String originalName, String name, String year, String time, String ageRestriction, String description,
-                 String slogan, String budget, String countryRu, String type, String createdAt, String updatedAt, String poster,
+                 String slogan, String budget, String country, String type, String createdAt, String updatedAt, String poster,
                  String persons, String genres) {
         this.id = id;
         this.originalName = originalName;
@@ -76,7 +93,7 @@ public class Movie {
         this.description = description;
         this.slogan = slogan;
         this.budget = budget;
-        this.countryRu = countryRu;
+        this.country = country;
         this.type = type;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -121,8 +138,8 @@ public class Movie {
         this.budget = budget;
     }
 
-    public void setCountryRu(String countryRu) {
-        this.countryRu = countryRu;
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     public void setType(String type) {

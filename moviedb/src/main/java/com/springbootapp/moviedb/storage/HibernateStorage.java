@@ -8,6 +8,7 @@ import com.springbootapp.moviedb.token.Timestamp;
 import com.springbootapp.moviedb.token.TokenUsers;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +28,7 @@ public class HibernateStorage implements Storage {
     private final TokenUsers tokenUsers;
     private final Timestamp timestamp;
 
+    @Autowired
     public HibernateStorage(TokenUsers tokenUsers, Timestamp timestamp) {
         this.tokenUsers = tokenUsers;
         this.timestamp = timestamp;

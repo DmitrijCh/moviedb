@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springbootapp.moviedb.model.*;
 import com.springbootapp.moviedb.token.Timestamp;
 import com.springbootapp.moviedb.token.TokenUsers;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ public class JDBCStorage implements Storage {
     private final Timestamp timestamp;
     private final JdbcTemplate jdbcTemplate;
 
+    @Autowired
     public JDBCStorage(TokenUsers tokenUsers, Timestamp timestamp, JdbcTemplate jdbcTemplate) {
         this.tokenUsers = tokenUsers;
         this.timestamp = timestamp;

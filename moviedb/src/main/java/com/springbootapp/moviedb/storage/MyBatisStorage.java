@@ -6,6 +6,7 @@ import com.springbootapp.moviedb.model.*;
 import com.springbootapp.moviedb.mybatis.*;
 import com.springbootapp.moviedb.token.Timestamp;
 import com.springbootapp.moviedb.token.TokenUsers;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +26,7 @@ public class MyBatisStorage implements Storage {
     private final UserMapper userMapper;
     private final CommentMoviesMapper commentMoviesMapper;
 
+    @Autowired
     public MyBatisStorage(TokenUsers tokenUsers, Timestamp timestamp, KeyMapper keyMapper,
                           MovieInformMapper movieInformMapper, MovieMapper movieMapper,
                           MovieRatingMapper movieRatingMapper, UserMapper userMapper,
